@@ -1,10 +1,10 @@
-![a1 logo](a1_small.png)
+![a1 logo](assets/a1_small.png)
 # A1 Notation Package
 
 This package implements a set of A1 types to assist with the use of A1 Notation used in spreadsheets and worksheets. 
 
 The screenshot below shows the user interface presenting the A1 notation in the rows and columns. 
-![A1 Spreadsheet User Interface](worksheet.png)
+![A1 Spreadsheet User Interface](assets/worksheet.png)
 
 From [wikipedia](https://en.wikipedia.org/wiki/Spreadsheet#) 
  ```
@@ -53,6 +53,7 @@ Simple usage examples below:
   print('The A1 below is ${a1.down}'); // C233
 
 ```
+The `test/` directory explores other use cases for the A1 types and library.
 
 ## Usage
 
@@ -62,3 +63,8 @@ Also good to start with the API docs for each type.
 1. [A1]() 
 1. [A1Range]() 
 1. [A1Reference]()
+
+
+## Reference
+
+* The [a1 logo](assets/a1.svg) was created using [inkscape](https://inkscape.org/) with simple shapes and the sans font on mac and a square shape with the top left point removed to echo the 'table select' in spreadsheets. The 1 overlaps the A slightly with slight transparency in a similar manner to the flutter and dart logos.
