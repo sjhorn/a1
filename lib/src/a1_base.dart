@@ -71,27 +71,6 @@ class A1 implements Comparable<A1> {
     final row = int.tryParse(result.value[#row]!);
     if (row == null) return null;
     return A1._(column, row);
-
-    // String source = input.trim().toUpperCase();
-    // List<int> units = source.codeUnits;
-    // if (!units.first.isA1Letter) {
-    //   return null;
-    // }
-    // int digitIndex = 0;
-    // bool inLetters = true;
-    // for (var (index, unit) in units.sublist(1).indexed) {
-    //   if ((inLetters && unit.isA1Letter) || (!inLetters && unit.isA1Digit)) {
-    //     continue;
-    //   } else if (inLetters && unit.isA1Digit) {
-    //     digitIndex = index + 1;
-    //     inLetters = false;
-    //     continue;
-    //   }
-    //   // invalid sequence so error
-    //   return null;
-    // }
-    // return A1._(source.substring(0, digitIndex),
-    //     int.parse(source.substring(digitIndex)));
   }
 
   /// Returns a (column, row) vector representing the A1

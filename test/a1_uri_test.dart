@@ -81,17 +81,17 @@ void main() {
       expect(() => parser.parse('scott@test:').value,
           throwsA(isA<ParserException>()));
     });
-    test('hostname', () {
+    test('host', () {
       final parser = a1Uri.buildFrom(a1Uri.authority()).end();
 
       var result = parser.parse('scott:horn@test.com:123').value;
-      expect(result, containsPair(#hostname, 'test.com'));
+      expect(result, containsPair(#host, 'test.com'));
 
       result = parser.parse('com:123').value;
-      expect(result, containsPair(#hostname, 'com'));
+      expect(result, containsPair(#host, 'com'));
 
       result = parser.parse('scott').value;
-      expect(result, containsPair(#hostname, 'scott'));
+      expect(result, containsPair(#host, 'scott'));
 
       expect(() => parser.parse('scott@test:').value,
           throwsA(isA<ParserException>()));
@@ -105,7 +105,7 @@ void main() {
         #authority: 'www.ics.uci.edu',
         #username: isNull,
         #password: isNull,
-        #hostname: 'www.ics.uci.edu',
+        #host: 'www.ics.uci.edu',
         #port: isNull,
         #path: '/pub/ietf/uri/',
         #query: isNull,
@@ -119,7 +119,7 @@ void main() {
         #authority: 'a',
         #username: isNull,
         #password: isNull,
-        #hostname: 'a',
+        #host: 'a',
         #port: isNull,
         #path: '/b/c/d;e',
         #query: 'f&g=h',
@@ -133,7 +133,7 @@ void main() {
         #authority: 'www.example.org:22',
         #username: isNull,
         #password: isNull,
-        #hostname: 'www.example.org',
+        #host: 'www.example.org',
         #port: '22',
         #path: '/foo bar/zork<>',
         #query: r'\^`{|}',
@@ -146,7 +146,7 @@ void main() {
         #authority: isNull,
         #username: isNull,
         #password: isNull,
-        #hostname: isNull,
+        #host: isNull,
         #port: isNull,
         #path: 'text/plain;charset=iso-8859-7,hallo',
         #query: isNull,
@@ -160,7 +160,7 @@ void main() {
         #authority: 'www.übermäßig.de',
         #username: isNull,
         #password: isNull,
-        #hostname: 'www.übermäßig.de',
+        #host: 'www.übermäßig.de',
         #port: isNull,
         #path: '/müßiggänger',
         #query: isNull,
@@ -174,7 +174,7 @@ void main() {
         #authority: isNull,
         #username: isNull,
         #password: isNull,
-        #hostname: isNull,
+        #host: isNull,
         #port: isNull,
         #path: 'test',
         #query: isNull,
@@ -183,14 +183,14 @@ void main() {
       });
     });
     test('a file schema path DOS style drive', () async {
-      uriTest(r'file:c:\\foo\\bar.html', {
+      uriTest(r'file:c:\foo\bar.html', {
         #scheme: 'file',
         #authority: isNull,
         #username: isNull,
         #password: isNull,
-        #hostname: isNull,
+        #host: isNull,
         #port: isNull,
-        #path: r'c:\\foo\\bar.html',
+        #path: r'c:/foo/bar.html',
         #query: isNull,
         #params: [],
         #fragment: isNull,
@@ -202,7 +202,7 @@ void main() {
         #authority: 'foo:bar@localhost',
         #username: 'foo',
         #password: 'bar',
-        #hostname: 'localhost',
+        #host: 'localhost',
         #port: isNull,
         #path: '/test',
         #query: isNull,

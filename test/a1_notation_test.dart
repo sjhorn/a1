@@ -214,7 +214,7 @@ void main() {
           .parse("'http://sharepoint.com/path1/path2/[Sales.xlsx]Jan sales'")
           .value;
 
-      expect(result, containsPair(#hostname, 'sharepoint.com'));
+      expect(result, containsPair(#host, 'sharepoint.com'));
       expect(result, containsPair(#filename, 'Sales.xlsx'));
       expect(result, containsPair(#worksheet, 'Jan sales'));
     });
@@ -226,7 +226,7 @@ void main() {
               "'http://sharepoint.com/path1/path2/[Sales.xlsx]Jan sales'!B2:B5")
           .value;
 
-      expect(result, containsPair(#hostname, 'sharepoint.com'));
+      expect(result, containsPair(#host, 'sharepoint.com'));
       expect(result, containsPair(#filename, 'Sales.xlsx'));
       expect(result, containsPair(#worksheet, 'Jan sales'));
       expect(result, containsPair(#column1, 'B'));
@@ -260,11 +260,12 @@ void main() {
     });
     test('file uri with windows local drive', () {
       final a1P = a1.build();
-      final result =
-          a1P.parse("'D:\\Reports\\[Sales.xlsx]Jan sales'!B2:B5").value;
+      final result = a1P
+          .parse("'D:\\Reports\\2024\\Jan\\[Sales.xlsx]Jan sales'!B2:B5")
+          .value;
 
-      expect(result, containsPair(#scheme, 'D'));
-      expect(result, containsPair(#path, '\\Reports\\'));
+      expect(result, containsPair(#scheme, 'd'));
+      expect(result, containsPair(#path, '/Reports/2024/Jan/'));
       expect(result, containsPair(#filename, 'Sales.xlsx'));
       expect(result, containsPair(#worksheet, 'Jan sales'));
       expect(result, containsPair(#column1, 'B'));
@@ -280,7 +281,7 @@ void main() {
           .value;
 
       expect(result, containsPair(#scheme, 'http'));
-      expect(result, containsPair(#hostname, 'sharepoint.com'));
+      expect(result, containsPair(#host, 'sharepoint.com'));
       expect(result, containsPair(#path, '/path1/path2/'));
       expect(result, containsPair(#filename, 'Sales.xlsx'));
       expect(result, containsPair(#worksheet, 'Jan sales'));

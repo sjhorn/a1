@@ -16,8 +16,8 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
         range(),
       ].toChoiceParser();
 
-  //'[Year budget.xlsx]Jan'!B2:B5
-  //'[Sales.xlsx]Jan sales'!B2:B5
+  // '[Year budget.xlsx]Jan'!B2:B5
+  // '[Sales.xlsx]Jan sales'!B2:B5
   // 'D:\Reports\[Sales.xlsx]Jan sales'!B2:B5
   // 'http://sharepoint.com/path1/path2/[Sales.xlsx]Jan sales'!B2:B5
   // 'C:\Users\sumit\Desktop\[Example File.xlsx]Sheet1'!$A$1
@@ -40,8 +40,24 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
         ref0(filenameWithSheet),
         ref0(quote),
       ).map4((q1, uriString, fileSheet, q2) {
+        final uri = Uri.parse(uriString);
+        final userInfoParts = uri.userInfo.split(':');
+        final username = userInfoParts[0];
+        final password = userInfoParts.length == 2 ? userInfoParts[1] : '';
+
         return {
-          ...A1Uri().build().parse(uriString).value,
+          ...uri.queryParameters
+              .map((key, value) => MapEntry(Symbol(key), value)),
+          //...A1Uri().build().parse(uriString).value,
+          #scheme: uri.scheme,
+          #authority: uri.authority,
+          #username: username,
+          #password: password,
+          #host: uri.host,
+          #port: '${uri.port}',
+          #path: uri.path,
+          #query: uri.query,
+          #fragment: uri.fragment,
           ...fileSheet,
         };
       });

@@ -34,10 +34,10 @@ class A1Uri extends GrammarDefinition {
             .parse(authorityString?.$2 ?? '')
             .value;
         return <Symbol, dynamic>{
-          #scheme: scheme?.$1,
+          #scheme: scheme?.$1.toLowerCase(),
           #authority: authorityString?.$2,
           ...authorityMap,
-          #path: path,
+          #path: path.replaceAll('\\', '/'),
           #query: queryString?.$2,
           #params: params,
           #fragment: fragment?.$2,
@@ -67,7 +67,7 @@ class A1Uri extends GrammarDefinition {
       ).map3((credentials, hostname, port) => {
             #username: credentials?.$1,
             #password: credentials?.$2?.$2,
-            #hostname: hostname,
+            #host: hostname,
             #port: port?.$2,
           });
 

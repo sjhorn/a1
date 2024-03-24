@@ -24,3 +24,5 @@
 library;
 
 export 'src/a1_base.dart';
+export 'src/a1_range.dart';
+export 'src/a1_reference.dart';
