@@ -11,10 +11,10 @@ void main() {
     });
 
     test('throws when parsing an invalid string', () {
-      expect(() => A1.parse('123'), throwsA(TypeMatcher<FormatException>()));
-      expect(() => A1.parse('å1'), throwsA(TypeMatcher<FormatException>()));
-      expect(() => A1.parse('aøa1'), throwsA(TypeMatcher<FormatException>()));
-      expect(() => A1.parse('A1.1'), throwsA(TypeMatcher<FormatException>()));
+      expect(() => A1.parse('123'), throwsA(isA<FormatException>()));
+      expect(() => A1.parse('å1'), throwsA(isA<FormatException>()));
+      expect(() => A1.parse('aøa1'), throwsA(isA<FormatException>()));
+      expect(() => A1.parse('A1.1'), throwsA(isA<FormatException>()));
     });
 
     test('by tryParsing a valid A1 string', () {
@@ -36,8 +36,7 @@ void main() {
     });
 
     test('throws from an invalid vector', () {
-      expect(
-          () => A1.fromVector(-1, 2), throwsA(TypeMatcher<FormatException>()));
+      expect(() => A1.fromVector(-1, 2), throwsA(isA<FormatException>()));
     });
   });
 
@@ -46,8 +45,6 @@ void main() {
     final fromVector = A1.fromVector(702, 0);
 
     test('valid column', () {
-      print(
-          'fromVector $fromVector ${fromVector.column} fromString $fromString ${fromString.column}');
       expect(fromVector.column, equals(fromString.column));
       expect(fromString.column, equals(702));
     });

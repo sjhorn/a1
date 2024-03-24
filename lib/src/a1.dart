@@ -8,19 +8,19 @@ import 'package:a1/src/grammer/a1_notation.dart';
 import 'package:petitparser/petitparser.dart';
 
 class A1 implements Comparable<A1> {
-  static A1Notation _a1n = A1Notation();
+  static final A1Notation _a1n = A1Notation();
 
-  /// Uppercase letter for the A part of A1 notation
-  late final String letter;
+  /// Uppercase letters for the A part of A1 notation
+  late final String letters;
 
-  /// Digital for the 1 in the A1 notioan
-  late final int digit;
+  /// Digits for the 1 in the A1 notation
+  late final int digits;
 
   /// Utility for self reference in new pattern matching
   A1 get self => this;
 
   /// Private contructor
-  A1._(this.letter, this.digit);
+  A1._(this.letters, this.digits);
 
   /// Parses a string containing an A1 literal into an A1.
   ///
@@ -67,7 +67,7 @@ class A1 implements Comparable<A1> {
         result.value[#row] == null) {
       return null;
     }
-    final column = (result.value[#column]! as String).toUpperCase();
+    final column = result.value[#column]!;
     final row = int.tryParse(result.value[#row]!);
     if (row == null) return null;
     return A1._(column, row);
@@ -105,8 +105,8 @@ class A1 implements Comparable<A1> {
       }
       codeUnits.add(65 + evaluationIndex);
     }
-    letter = String.fromCharCodes(codeUnits.reversed);
-    digit = row + 1;
+    letters = String.fromCharCodes(codeUnits.reversed);
+    digits = row + 1;
   }
 
   /// Create a list of A1's between this A1 and to
@@ -131,33 +131,33 @@ class A1 implements Comparable<A1> {
 
   /// Return a [String] of the A1
   @override
-  String toString() => '$letter$digit';
+  String toString() => '$letters$digits';
 
   /// Return the column as a zero based [int]
   int get column {
     int column = 0;
-    for (final unit in letter.codeUnits) {
+    for (final unit in letters.codeUnits) {
       column = column * 26 + unit - 'A'.codeUnitAt(0) + 1;
     }
     return column - 1;
   }
 
   /// Return the row as a zero based [int]
-  int get row => digit - 1;
+  int get row => digits - 1;
 
   /// Test whether this A1 is equal to `other`.
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is A1 && other.letter == letter && other.digit == digit;
+    return other is A1 && other.letters == letters && other.digits == digits;
   }
 
   /// Returns a hash code for a numerical value.
   ///
   /// The hash code is compatible with equality. It returns the same value
   @override
-  int get hashCode => letter.hashCode ^ digit.hashCode;
+  int get hashCode => letters.hashCode ^ digits.hashCode;
 
   /// Compares this to `other` [A1].
   ///
@@ -203,7 +203,7 @@ class A1 implements Comparable<A1> {
 }
 
 /// Utility extension to help the comparison be more expressive
-extension on int {
+extension A1Tools on int {
   bool get isA1Letter => this >= 'A'.codeUnitAt(0) && this <= 'Z'.codeUnitAt(0);
   bool get isA1Digit => this >= '0'.codeUnitAt(0) && this <= '9'.codeUnitAt(0);
 }

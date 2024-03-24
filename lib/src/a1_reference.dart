@@ -1,3 +1,7 @@
+// Copyright (c) 2024, Scott Horn.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 // Reference allows a cell or cell range to be referenced in another 
 // sheet/file/url
 //

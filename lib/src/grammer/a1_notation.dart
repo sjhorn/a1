@@ -1,5 +1,8 @@
+// Copyright (c) 2024, Scott Horn.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'package:petitparser/petitparser.dart';
-import 'a1_uri.dart';
 
 typedef SymbolMap = Map<Symbol, dynamic>;
 
@@ -8,7 +11,12 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
   Parser<SymbolMap> start() => reference();
 
   // Reference allows a cell or cell range to be referenced in another
-  // 'My Custom Sheet' refers to all the cells in 'My Custom Sheet'.
+  //
+  // These can come with full uri, or be simple the name eg:
+  // http uri: 'https://sharepoint.com/path1/path2/[Sales.xlsx]Jan sales'!B2:B5
+  // file uri using drive as scheme: 'D:\Reports\[Sales.xlsx]Jan sales'!B2:B5
+  // file uri using file scheme: 'file:\D:\Reports\[Sales.xlsx]Jan sales'!B2:B5
+  // worksheet: 'My Custom Sheet' refers to all the cells in 'My Custom Sheet'.
   Parser<SymbolMap> reference() => [
         uriReference(),
         filenameWithSheetReference(),
@@ -16,10 +24,12 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
         range(),
       ].toChoiceParser();
 
+  // URI reference for https, file, drive schemes etc.
+  //
   // '[Year budget.xlsx]Jan'!B2:B5
   // '[Sales.xlsx]Jan sales'!B2:B5
   // 'D:\Reports\[Sales.xlsx]Jan sales'!B2:B5
-  // 'http://sharepoint.com/path1/path2/[Sales.xlsx]Jan sales'!B2:B5
+  // 'https://sharepoint.com/path1/path2/[Sales.xlsx]Jan sales'!B2:B5
   // 'C:\Users\sumit\Desktop\[Example File.xlsx]Sheet1'!$A$1
   // 'C:\Documents and Settings\Username\My spreadsheets\[main sheet.xls]Sheet1'!<A1RANGE> file reference on local file system
   // 'C:\Documents and Settings\Username\My spreadsheets\[main sheet.xlsx]Sheet1'!<A1RANGE> file reference on local file system
@@ -34,6 +44,9 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
             ...range1,
           });
 
+  // support the seperation of the file from the uri with the
+  // square brackets [] wrapping the file
+  //
   Parser<SymbolMap> filePath() => seq4(
         ref0(quote),
         pattern('^[').plus().flatten('uri'),
@@ -62,7 +75,10 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
         };
       });
 
-  //'[Year budget.xlsx]Jan'!B2:B5
+  // Quoted Squarebracket file with the worksheet
+  //
+  // eg. '[Year budget.xlsx]Jan'!B2:B5
+  //
   Parser<SymbolMap> filenameWithSheetReference() => seq5(
         ref0(quote),
         ref0(filenameWithSheet),
@@ -76,6 +92,10 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
         },
       );
 
+  // Filename with the worksheet name
+  //
+  // eg. [file name]worksheet
+  //
   Parser<SymbolMap> filenameWithSheet() => seq2(
         ref0(filename),
         ref1(worksheetName, "'"),
@@ -84,15 +104,21 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
             ...worksheet1,
           });
 
+  // Filename with square brackets []
+  //
   Parser<SymbolMap> filename() =>
       seq3(char('['), pattern('^[]').plus().flatten('filename'), char(']'))
           .map3((_, filename, __) => {#filename: filename});
 
+  // A worksheet reference includes Worksheet with range
+  //
+  // Examples:
   // Sheet1!<A1RANGE> refers to the range in Sheet1.
   // Sheet1 refers to all the cells in Sheet1.
   // 'My Custom Sheet'!<A1RANGE> refers to all the cells in the first column of a
   // sheet named "My Custom Sheet." Single quotes are required for sheet
   // names with spaces, special characters, or an alphanumeric combination.
+  //
   Parser<SymbolMap> worksheetReference() =>
       seq3(ref0(worksheet), char('!'), ref0(range)).map3(
         (worksheet, _, range) => {
@@ -101,6 +127,9 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
         },
       );
 
+  // A worksheet can be quote if there are spaces
+  // or without spaces can be unquoted in some scenarios
+  //
   Parser<SymbolMap> worksheet() => [
         ref0(worksheetQuoted),
         ref0(worksheetName),
@@ -124,7 +153,16 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
   String worksheetPattern = '^:?*[]/\\';
   Parser<String> quote() => char("'");
 
-  // Range types
+  // Range types vary to allow specifying different rectangles
+  //
+  // Examples:
+  // A1:B2 (or A1...B2) - simple range betwee column A, row 1 & column B, row 2
+  // 2:C3 (or 2...C3) - includes all columns up to C between rows 2 and 3
+  // C1:2 (or C1...2) - includes all columns starting at C between rows 1 and 2
+  // C:E2 (or C...E2) - includes all rows up to 2 between columns C and E
+  // C1:E (or C1...E) - includes all rows starting at 1 between columns C and E
+  // A - all rows of colummn A
+  // 23 - all columns of row 23
   Parser<SymbolMap> range() => [
         ref0(a1Range),
         ref0(rowsTo),
@@ -210,8 +248,10 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
       .map2((column, row) => {#column: column[#column]!, #row: row[#row]!});
 
   // any letter a-z or A-Z repeating
-  Parser<SymbolMap> column() =>
-      letter().plus().flatten('column').map((value) => {#column: value});
+  Parser<SymbolMap> column() => letter()
+      .plus()
+      .flatten('column')
+      .map((value) => {#column: value.toUpperCase()});
 
   // any number greater than 0
   Parser<SymbolMap> row() =>

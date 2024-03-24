@@ -1,13 +1,25 @@
-// Based on petitparser examples which in turn are based on RFC-3986.
+// Copyright (c) 2024, Scott Horn.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+//
+// Based on petitparser examples
+// from https://github.com/petitparser/dart-petitparser-examples
+// which in turn are based on RFC-3986.
+//
+// Note: this has been adjusted to be the same as dart URI implementation
+// now this just serves as a stand alone grammar/parser for academic purposes
+// as a1_notation grammer uses dart:core uri.
 //
 // The accepted inputs and decomposition matches the example given in
 // Appendix B of the standard: https://tools.ietf.org/html/rfc3986#appendix-B.
 
 import 'package:petitparser/petitparser.dart';
 
+typedef SymbolMap = Map<Symbol, dynamic>;
+
 class A1Uri extends GrammarDefinition {
   @override
-  Parser<Map<Symbol, dynamic>> start() => uri().end();
+  Parser<SymbolMap> start() => uri().end();
 
   // A Uniform Resource Identifier (URI) is a compact sequence of
   // characters that identifies an abstract or physical resource.  This
@@ -15,7 +27,7 @@ class A1Uri extends GrammarDefinition {
   // resolving URI references that might be in relative form, along with
   // guidelines and security considerations for the use of URIs on the
   // Internet
-  Parser<Map<Symbol, dynamic>> uri() => seq5(
+  Parser<SymbolMap> uri() => seq5(
         seq2(ref0(_scheme), ':'.toParser()).optional(),
         seq2('//'.toParser(), ref0(_authority)).optional(),
         ref0(_path),
@@ -34,10 +46,10 @@ class A1Uri extends GrammarDefinition {
             .parse(authorityString?.$2 ?? '')
             .value;
         return <Symbol, dynamic>{
-          #scheme: scheme?.$1.toLowerCase(),
+          #scheme: scheme?.$1.toLowerCase(), // to match dart:core uri
           #authority: authorityString?.$2,
           ...authorityMap,
-          #path: path.replaceAll('\\', '/'),
+          #path: path.replaceAll('\\', '/'), // to match dart:core uri
           #query: queryString?.$2,
           #params: params,
           #fragment: fragment?.$2,

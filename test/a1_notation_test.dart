@@ -29,7 +29,7 @@ void main() {
       final a1p = a1.buildFrom(a1.a1()).end();
       var result = a1p.parse('abc123').value;
       expect(result, containsPair(#row, '123'));
-      expect(result, containsPair(#column, 'abc'));
+      expect(result, containsPair(#column, 'ABC'));
       expect(() => a1p.parse('a01').value, throwsA(isA<ParserException>()));
       expect(() => a1p.parse('').value, throwsA(isA<ParserException>()));
       expect(() => a1p.parse('12A').value, throwsA(isA<ParserException>()));

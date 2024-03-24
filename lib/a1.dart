@@ -1,4 +1,4 @@
-// A1 Notation
+/// A1 Notation
 ///
 /// The simplest form refers to a single cell with column letter and a row
 /// number. eg. A1.
@@ -23,6 +23,6 @@
 
 library;
 
-export 'src/a1_base.dart';
+export 'src/a1.dart';
 export 'src/a1_range.dart';
 export 'src/a1_reference.dart';
