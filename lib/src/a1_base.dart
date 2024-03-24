@@ -4,7 +4,12 @@
 
 import 'dart:math';
 
+import 'package:a1/src/grammer/a1_notation.dart';
+import 'package:petitparser/petitparser.dart';
+
 class A1 implements Comparable<A1> {
+  static A1Notation _a1n = A1Notation();
+
   /// Uppercase letter for the A part of A1 notation
   late final String letter;
 
@@ -56,26 +61,37 @@ class A1 implements Comparable<A1> {
   /// a1 = A1.tryParse('A-1'); // null
   /// ```
   static A1? tryParse(String input) {
-    String source = input.trim().toUpperCase();
-    List<int> units = source.codeUnits;
-    if (!units.first.isA1Letter) {
+    final result = _a1n.buildFrom(_a1n.a1()).end().parse(input);
+    if (result is Failure ||
+        result.value[#column] == null ||
+        result.value[#row] == null) {
       return null;
     }
-    int digitIndex = 0;
-    bool inLetters = true;
-    for (var (index, unit) in units.sublist(1).indexed) {
-      if ((inLetters && unit.isA1Letter) || (!inLetters && unit.isA1Digit)) {
-        continue;
-      } else if (inLetters && unit.isA1Digit) {
-        digitIndex = index + 1;
-        inLetters = false;
-        continue;
-      }
-      // invalid sequence so error
-      return null;
-    }
-    return A1._(source.substring(0, digitIndex),
-        int.parse(source.substring(digitIndex)));
+    final column = (result.value[#column]! as String).toUpperCase();
+    final row = int.tryParse(result.value[#row]!);
+    if (row == null) return null;
+    return A1._(column, row);
+
+    // String source = input.trim().toUpperCase();
+    // List<int> units = source.codeUnits;
+    // if (!units.first.isA1Letter) {
+    //   return null;
+    // }
+    // int digitIndex = 0;
+    // bool inLetters = true;
+    // for (var (index, unit) in units.sublist(1).indexed) {
+    //   if ((inLetters && unit.isA1Letter) || (!inLetters && unit.isA1Digit)) {
+    //     continue;
+    //   } else if (inLetters && unit.isA1Digit) {
+    //     digitIndex = index + 1;
+    //     inLetters = false;
+    //     continue;
+    //   }
+    //   // invalid sequence so error
+    //   return null;
+    // }
+    // return A1._(source.substring(0, digitIndex),
+    //     int.parse(source.substring(digitIndex)));
   }
 
   /// Returns a (column, row) vector representing the A1
