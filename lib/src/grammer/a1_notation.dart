@@ -248,14 +248,15 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
       .map2((column, row) => {#column: column[#column]!, #row: row[#row]!});
 
   // any letter a-z or A-Z repeating
-  Parser<SymbolMap> column() => letter()
-      .plus()
-      .flatten('column')
-      .map((value) => {#column: value.toUpperCase()});
+  Parser<SymbolMap> column() =>
+      letter().plus().flatten('column').map((value) => {
+            #column: value.toUpperCase(),
+            #column1: value.toUpperCase(),
+          });
 
   // any number greater than 0
   Parser<SymbolMap> row() =>
       seq2(anyOf('123456789'), digit().star().flatten('row'))
           .flatten()
-          .map((value) => {#row: value});
+          .map((value) => {#row: value, #row1: value});
 }

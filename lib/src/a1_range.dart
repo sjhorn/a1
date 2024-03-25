@@ -7,6 +7,7 @@
 // 1:2 refers to all the cells in the first two rows of Sheet1.
 // A5:A refers to all the cells of the first column of Sheet 1, from row 5 onward.
 
+import 'package:a1/src/a1_partial.dart';
 import 'package:petitparser/petitparser.dart';
 
 import 'package:a1/a1.dart';
@@ -14,34 +15,19 @@ import 'package:a1/src/grammer/a1_notation.dart';
 
 class A1Range implements Comparable<A1Range> {
   static final A1Notation _a1n = A1Notation();
+  static final _parser = _a1n.buildFrom(_a1n.range()).end();
 
-  /// if a full formed A1 this is the from A1
-  final A1? from;
+  /// range from A1Partial
+  final A1Partial from;
 
-  /// if a full formed A1 this is the to A1
-  final A1? to;
-
-  /// Either the from letters (eg. BB) or null
-  final String? fromLetters;
-
-  /// Either the from digits (eg. 123) or null
-  final int? fromDigits;
-
-  /// Either the to letters (eg. AA) or null
-  final String? toLetters;
-
-  /// Either the to digits (eg. 123) or null
-  final int? toDigits;
+  /// range to A1Partial
+  final A1Partial to;
 
   /// Private contructor
   A1Range._(
     this.from,
-    this.to, {
-    this.fromLetters,
-    this.fromDigits,
-    this.toLetters,
-    this.toDigits,
-  });
+    this.to,
+  );
 
   /// Parses a string containing an A1Range literal into an A1Range.
   ///
@@ -79,51 +65,42 @@ class A1Range implements Comparable<A1Range> {
   /// a1Range = A1Range.tryParse(''); // null
   /// ```
   static A1Range? tryParse(String input) {
-    final result = _a1n.buildFrom(_a1n.a1Range()).end().parse(input);
+    final result = _parser.parse(input);
     if (result is Failure) {
       return null;
     }
     final value = result.value;
-    A1? from, to;
+    final left = A1Partial(value[#column1], int.tryParse(value[#row1] ?? ''));
+    final right = A1Partial(value[#column2], int.tryParse(value[#row2] ?? ''));
 
-    if (value[#column1] != null && value[#row1] != null) {
-      from = A1.parse('${value[#column1]}${value[#row1]}');
+    if (left <= right) {
+      return A1Range._(left, right);
+    } else {
+      return A1Range._(right, left);
     }
-    if (value[#column2] != null && value[#row2] != null) {
-      to = A1.parse('${value[#column2]}${value[#row2]}');
-    }
-    return A1Range._(
-      from,
-      to,
-      fromLetters: value[#column1],
-      fromDigits: value.containsKey(#row1)
-          ? int.parse((value[#row1]! as String))
-          : null,
-      toLetters: value[#column2],
-      toDigits: value.containsKey(#row2)
-          ? int.parse((value[#row2]! as String))
-          : null,
-    );
   }
 
+  /// Compare the area of two ranges to determine which is bigger
   @override
-  int compareTo(A1Range other) {
-    // TODO: implement compareTo
-    throw UnimplementedError();
-  }
+  int compareTo(A1Range other) =>
+      switch ((from.a1, to.a1, other.from.a1, other.to.a1)) {
+        (
+          A1(self: var from1),
+          A1(self: var to1),
+          A1(self: var from2),
+          A1(self: var to2),
+        ) =>
+          from1.area(to1).compareTo(from2.area(to2)),
+        _ => throw UnsupportedError(
+            'The area of the two ranges is not comparable'),
+      };
 
   /// Test whether this A1 is equal to `other`.
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is A1Range &&
-        other.from == from &&
-        other.to == to &&
-        other.fromLetters == fromLetters &&
-        other.fromDigits == fromDigits &&
-        other.toLetters == toLetters &&
-        other.toDigits == toDigits;
+    return other is A1Range && other.from == from && other.to == to;
   }
 
   /// Returns a hash code for a numerical value.
@@ -131,12 +108,7 @@ class A1Range implements Comparable<A1Range> {
   /// The hash code is compatible with equality. It returns the same value
   @override
   int get hashCode {
-    return from.hashCode ^
-        to.hashCode ^
-        fromLetters.hashCode ^
-        fromDigits.hashCode ^
-        toLetters.hashCode ^
-        toDigits.hashCode;
+    return from.hashCode ^ to.hashCode;
   }
 }
 

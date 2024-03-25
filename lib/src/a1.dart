@@ -4,6 +4,8 @@
 
 import 'dart:math';
 
+import 'package:a1/src/a1_partial.dart';
+import 'package:a1/src/a1_range.dart';
 import 'package:a1/src/grammer/a1_notation.dart';
 import 'package:petitparser/petitparser.dart';
 
@@ -149,7 +151,7 @@ class A1 implements Comparable<A1> {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-
+    if (other is A1Partial) return other.a1 == this;
     return other is A1 && other.letters == letters && other.digits == digits;
   }
 
@@ -200,6 +202,23 @@ class A1 implements Comparable<A1> {
   /// Returns the [A1] above the current [A1] if already
   /// in row 0 will return a copy of the current cell
   A1 get up => A1.fromVector(column, max(0, row - 1));
+
+  // Less than operator for two [A1]s
+  bool operator <(A1 other) => compareTo(other) < 0;
+
+  // Less than equal to operator for two [A1]s
+  bool operator <=(A1 other) => compareTo(other) <= 0;
+
+  // Greater than operator for two [A1]s
+  bool operator >(A1 other) => compareTo(other) > 0;
+
+  // Greater than equal to operator for two [A1]s
+  bool operator >=(A1 other) => compareTo(other) >= 0;
+
+  // Area between two A1s
+  int area(A1 other) =>
+      (max(column, other.column) - min(column, other.column)) *
+          (max(row, other.row) - min(row, other.row)) as int;
 }
 
 /// Utility extension to help the comparison be more expressive
