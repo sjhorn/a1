@@ -29,6 +29,10 @@ class A1Range implements Comparable<A1Range> {
     this.to,
   );
 
+  /// Creates a range from two supplied A1Partials for from and to
+  static A1Range fromPartials(A1Partial from, A1Partial to) =>
+      A1Range._(from, to);
+
   /// Parses a string containing an A1Range literal into an A1Range.
   ///
   /// If that fails, too, it throws a [FormatException].

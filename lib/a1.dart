@@ -24,5 +24,6 @@
 library;
 
 export 'src/a1.dart';
+export 'src/a1_partial.dart';
 export 'src/a1_range.dart';
 export 'src/a1_reference.dart';

@@ -5,14 +5,40 @@
 import 'package:a1/a1.dart';
 
 class A1Partial implements Comparable {
+  /// letters of the A1 or null for all columns
   final String? letters;
+
+  /// digits of the A1 or null for all rows
   final int? digits;
 
-  A1Partial(this.letters, this.digits);
+  /// Create a A1Partial from letters or null, and digits or null
+  ///
+  /// Examples:
+  /// ```dart
+  /// A1Partial a1p = A1Partial('A', 1); //A1
+  /// a1p = A1Partial('b'); // B <all rows>
+  /// a1p = A1Partial('1'); // 1 <all columns>
+  /// a1p = A1Partial('');  // <all columns & rows>
+  /// ```
+  A1Partial(String? letters, this.digits) : letters = letters?.toUpperCase();
 
+  /// If this partial has letters and digitis it get be returned as A1
+  /// otherwise a null is returned
+  ///
+  /// Examples:
+  /// ```dart
+  /// A1? a1 = A1Partial('A', 1); // A1
+  /// a1 = A1Partial('A', null); // null
+  /// a1 = A1Partial(null, 1); // null
+  /// ```
   A1? get a1 =>
       letters != null && digits != null ? A1.fromVector(column!, row!) : null;
 
+  /// The real work in a A1Partial is deciding if it is bigger than another
+  /// this is important for creation of a range to order the left and right
+  /// side of the : or ...
+  ///
+  ///
   @override
   int compareTo(other) {
     return switch ((other, letters, digits)) {
@@ -37,6 +63,7 @@ class A1Partial implements Comparable {
     };
   }
 
+  // compare when other side is a partial
   int _comparePartials(A1Partial other) {
     return switch ((other.a1, other.column, other.row, a1, column, row)) {
       // both are a1s
@@ -95,6 +122,8 @@ class A1Partial implements Comparable {
   bool operator >(other) => compareTo(other) > 0;
   bool operator >=(other) => compareTo(other) >= 0;
 
+  /// If other is an A1Partial then compare letters/digits
+  /// if it is an A1, try to see if this is castable as A1 and compare
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -108,6 +137,10 @@ class A1Partial implements Comparable {
   @override
   int get hashCode => letters.hashCode ^ digits.hashCode;
 
+  /// Show the A1Partial with null left as a blank string
   @override
   String toString() => '${letters ?? ""}${digits ?? ""}';
+
+  /// if both letters and digits are null this selects all
+  bool get isAll => letters == null && digits == null;
 }

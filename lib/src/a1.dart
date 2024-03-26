@@ -5,7 +5,6 @@
 import 'dart:math';
 
 import 'package:a1/src/a1_partial.dart';
-import 'package:a1/src/a1_range.dart';
 import 'package:a1/src/grammer/a1_notation.dart';
 import 'package:petitparser/petitparser.dart';
 
