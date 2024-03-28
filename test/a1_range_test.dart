@@ -1,5 +1,4 @@
 import 'package:a1/a1.dart';
-import 'package:a1/src/a1_partial.dart';
 import 'package:test/test.dart';
 
 void main() {

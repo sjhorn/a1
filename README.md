@@ -1,4 +1,3 @@
-![a1 logo](https://raw.githubusercontent.com/sjhorn/a1/main/assets/a1_small.png)
 # A1 Notation Package
 
 This package implements a set of A1 types to assist with the use of A1 Notation used in spreadsheets and worksheets. 
@@ -8,11 +7,11 @@ The screenshot below shows the user interface presenting the A1 notation in the 
 ![A1 Spreadsheet User Interface](https://raw.githubusercontent.com/sjhorn/a1/main/assets/worksheet.png)
 
 From [wikipedia](https://en.wikipedia.org/wiki/Spreadsheet#) 
- ```
- A spreadsheet consists of a table of cells arranged into rows and columns and referred to by the X and Y locations. X locations, the columns, are normally represented by letters, "A," "B," "C," etc., while rows are normally represented by numbers, 1, 2, 3, etc. 
- 
- A single cell can be referred to by addressing its row and column, "C10". This electronic concept of cell references was first introduced in LANPAR (Language for Programming Arrays at Random) (co-invented by Rene Pardo and Remy Landau) and a variant used in VisiCalc and known as "A1 notation".
-```
+
+> A spreadsheet consists of a table of cells arranged into rows and columns and referred to by the X and Y locations. X locations, the columns, are normally represented by letters, "A," "B," "C," etc., while rows are normally represented by numbers, 1, 2, 3, etc. 
+>
+> A single cell can be referred to by addressing its row and column, "C10". This electronic concept of cell references was first introduced in LANPAR (Language for Programming Arrays at Random) (co-invented by Rene Pardo and Remy Landau) and a variant used in VisiCalc and known as "A1 notation".
+
 ## Features
 
  - [A1](a1/A1-class.html) class for parsing string to rows and columns and reverse eg. `A1`

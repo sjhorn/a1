@@ -7,7 +7,6 @@
 // 1:2 refers to all the cells in the first two rows of Sheet1.
 // A5:A refers to all the cells of the first column of Sheet 1, from row 5 onward.
 
-import 'package:a1/src/a1_partial.dart';
 import 'package:petitparser/petitparser.dart';
 
 import 'package:a1/a1.dart';
