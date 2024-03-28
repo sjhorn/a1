@@ -1,7 +1,7 @@
 name: a1
 description: A package that implements A1 Notation used in spreadsheets and  worksheets
 screenshots:
-  - description: 'A1'
+  - description: 'A1 logo for A1 Notation'
     path: assets/a1_small.png
 version: 1.0.1
 repository: https://github.com/sjhorn/a1
