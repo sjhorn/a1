@@ -61,12 +61,6 @@ The `test/` directory explores other use cases for the A1 types and library.
 
 The code above is available in the `example/a1_example.dart`
 
-Also good to start with the API docs for each type. 
-1. [A1]() 
-1. [A1Range]() 
-1. [A1Reference]()
-
-
 ## Reference
 
 * The [a1 logo](https://raw.githubusercontent.com/sjhorn/a1/main/assets/a1.svg) was created using [inkscape](https://inkscape.org/) with simple shapes and the sans font on mac and a square shape with the top left point removed to echo the 'table select' in spreadsheets. The 1 overlaps the A slightly with slight transparency in a similar manner to the flutter and dart logos.
