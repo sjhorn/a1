@@ -35,13 +35,12 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
   // 'C:\Documents and Settings\Username\My spreadsheets\[main sheet.xlsx]Sheet1'!<A1RANGE> file reference on local file system
   // Windows / DOS file reference
   //
-  Parser<SymbolMap> uriReference() => seq3(
+  Parser<SymbolMap> uriReference() => seq2(
         ref0(filePath),
-        char('!'),
-        ref0(range),
-      ).map3((filePath1, _, range1) => {
+        ref0(bangRange).optional(),
+      ).map2((filePath1, range1) => {
             ...filePath1,
-            ...range1,
+            ...(range1 ?? {}),
           });
 
   // support the seperation of the file from the uri with the
@@ -78,17 +77,17 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
   // Quoted Squarebracket file with the worksheet
   //
   // eg. '[Year budget.xlsx]Jan'!B2:B5
+  // eg. '[Year budget.xlsx]Jan'
   //
-  Parser<SymbolMap> filenameWithSheetReference() => seq5(
+  Parser<SymbolMap> filenameWithSheetReference() => seq4(
         ref0(quote),
         ref0(filenameWithSheet),
         ref0(quote),
-        char('!'),
-        ref0(range),
-      ).map5(
-        (q1, fws1, q2, _, range1) => {
+        ref0(bangRange).optional(),
+      ).map4(
+        (q1, fws1, q2, range1) => {
           ...fws1,
-          ...range1,
+          ...(range1 ?? {}),
         },
       );
 
@@ -120,12 +119,16 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
   // names with spaces, special characters, or an alphanumeric combination.
   //
   Parser<SymbolMap> worksheetReference() =>
-      seq3(ref0(worksheet), char('!'), ref0(range)).map3(
-        (worksheet, _, range) => {
+      seq2(ref0(worksheet), ref0(bangRange).optional()).map2(
+        (worksheet, range) => {
           ...worksheet,
-          ...range,
+          ...(range ?? {}),
         },
       );
+
+  // exclamation/bang ! a1range
+  Parser<SymbolMap> bangRange() =>
+      seq2(char('!'), ref0(range)).map2((_, range) => {...range});
 
   // A worksheet can be quote if there are spaces
   // or without spaces can be unquoted in some scenarios
@@ -150,7 +153,7 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
       .map((value) => {#worksheet: value});
 
   // Invalid worksheet chars are :?*[]/\
-  String worksheetPattern = '^:?*[]/\\';
+  String worksheetPattern = '^!:?*[]/\\';
   Parser<String> quote() => char("'");
 
   // Range types vary to allow specifying different rectangles
@@ -161,6 +164,7 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
   // C1:2 (or C1...2) - includes all columns starting at C between rows 1 and 2
   // C:E2 (or C...E2) - includes all rows up to 2 between columns C and E
   // C1:E (or C1...E) - includes all rows starting at 1 between columns C and E
+  // A1 - everything beyond A1
   // A - all rows of colummn A
   // 23 - all columns of row 23
   Parser<SymbolMap> range() => [
@@ -170,6 +174,7 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
         ref0(rows),
         ref0(columnsTo),
         ref0(columnsFrom),
+        ref0(a1),
         ref0(column),
         ref0(row),
       ].toChoiceParser();
@@ -244,8 +249,13 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
       ].toChoiceParser().map((value) => {#separator: value});
 
   // a1, AAZ123 complete A1
-  Parser<SymbolMap> a1() => seq2(ref0(column), ref0(row))
-      .map2((column, row) => {#column: column[#column]!, #row: row[#row]!});
+  Parser<SymbolMap> a1() =>
+      seq2(ref0(column), ref0(row)).map2((column, row) => {
+            #column: column[#column]!,
+            #row: row[#row]!,
+            #column1: column[#column]!,
+            #row1: row[#row]!,
+          });
 
   // any letter a-z or A-Z repeating
   Parser<SymbolMap> column() =>

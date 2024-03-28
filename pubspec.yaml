@@ -1,7 +1,7 @@
 name: a1
-description: A package that implements A1 Notation used in spreadsheets
+description: A package that implements A1 Notation used in spreadsheets and  worksheets
 version: 1.0.0
-# repository: https://github.com/sjhorn/a1
+repository: https://github.com/sjhorn/a1
 
 environment:
   sdk: ^3.3.0

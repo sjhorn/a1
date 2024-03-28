@@ -1,10 +1,11 @@
-![a1 logo](assets/a1_small.png)
+![a1 logo](https://raw.githubusercontent.com/sjhorn/a1/main/assets/a1_small.png)
 # A1 Notation Package
 
 This package implements a set of A1 types to assist with the use of A1 Notation used in spreadsheets and worksheets. 
 
-The screenshot below shows the user interface presenting the A1 notation in the rows and columns. 
-![A1 Spreadsheet User Interface](assets/worksheet.png)
+The screenshot below shows the user interface presenting the A1 notation in the rows and columns.
+
+![A1 Spreadsheet User Interface](https://raw.githubusercontent.com/sjhorn/a1/main/assets/worksheet.png)
 
 From [wikipedia](https://en.wikipedia.org/wiki/Spreadsheet#) 
  ```
@@ -14,9 +15,10 @@ From [wikipedia](https://en.wikipedia.org/wiki/Spreadsheet#)
 ```
 ## Features
 
- - [A1]() class for parsing string to rows and columns and reverse eg. `A1`
- - [A1Range]() class for select all cells between two ranges `A1:ZZ123`
- - [A1Reference]() class for referencing cells in a another worksheet or spreadsheet `'C:\Documents and Settings\Username\My spreadsheets\[main sheet]Sheet1!A1`
+ - [A1](a1/A1-class.html) class for parsing string to rows and columns and reverse eg. `A1`
+ - [A1Partial](a1/A1Partial-class.html) class for representing who columsn, rows or the whole spreadsheet eg. `A`, `1`, ``
+ - [A1Range](a1/A1Range-class.html) class for select all cells between two ranges `A1:ZZ123`
+ - [A1Reference](a1/A1Reference-class.html) class for referencing cells in a another worksheet or spreadsheet `'C:\Documents and Settings\Username\My spreadsheets\[main sheet]Sheet1'!A1`
 
 ## Getting started
 
@@ -67,4 +69,4 @@ Also good to start with the API docs for each type.
 
 ## Reference
 
-* The [a1 logo](assets/a1.svg) was created using [inkscape](https://inkscape.org/) with simple shapes and the sans font on mac and a square shape with the top left point removed to echo the 'table select' in spreadsheets. The 1 overlaps the A slightly with slight transparency in a similar manner to the flutter and dart logos.
+* The [a1 logo](https://raw.githubusercontent.com/sjhorn/a1/main/assets/a1.svg) was created using [inkscape](https://inkscape.org/) with simple shapes and the sans font on mac and a square shape with the top left point removed to echo the 'table select' in spreadsheets. The 1 overlaps the A slightly with slight transparency in a similar manner to the flutter and dart logos.

@@ -159,7 +159,7 @@ void main() {
         throwsA(isA<ParserException>()),
       );
     });
-    test('worksheet reference', () {
+    test('worksheet reference with range', () {
       final worksheet = a1.buildFrom(a1.worksheetReference()).end();
       final result = worksheet.parse("'Jan'!B2:B5").value;
       expect(result, containsPair(#worksheet, 'Jan'));
@@ -167,6 +167,11 @@ void main() {
       expect(result, containsPair(#row1, '2'));
       expect(result, containsPair(#column2, 'B'));
       expect(result, containsPair(#row2, '5'));
+    });
+    test('worksheet reference without range', () {
+      final worksheet = a1.buildFrom(a1.worksheetReference()).end();
+      final result = worksheet.parse("'Jan'").value;
+      expect(result, containsPair(#worksheet, 'Jan'));
     });
     test('filename', () {
       final filename = a1.buildFrom(a1.filename()).end();
@@ -188,7 +193,7 @@ void main() {
       );
     });
 
-    test('filename with sheet reference', () {
+    test('filename with sheet reference with range', () {
       final fwsRef = a1.buildFrom(a1.filenameWithSheetReference()).end();
       final result = fwsRef.parse("'[file name]Jan'!B2:B5").value;
       expect(result, containsPair(#filename, 'file name'));
@@ -197,6 +202,18 @@ void main() {
       expect(result, containsPair(#row1, '2'));
       expect(result, containsPair(#column2, 'B'));
       expect(result, containsPair(#row2, '5'));
+    });
+    test('filename with sheet reference without range', () {
+      final fwsRef = a1.buildFrom(a1.filenameWithSheetReference()).end();
+      final result = fwsRef.parse("'[file name]Jan'").value;
+      expect(result, containsPair(#filename, 'file name'));
+      expect(result, containsPair(#worksheet, 'Jan'));
+      expect(result.containsKey(#column), isFalse);
+      expect(result.containsKey(#column1), isFalse);
+      expect(result.containsKey(#row), isFalse);
+      expect(result.containsKey(#row1), isFalse);
+      expect(result.containsKey(#column2), isFalse);
+      expect(result.containsKey(#row2), isFalse);
     });
   });
 
@@ -289,6 +306,56 @@ void main() {
       expect(result, containsPair(#row1, '2'));
       expect(result, containsPair(#column2, 'B'));
       expect(result, containsPair(#row2, '5'));
+    });
+  });
+  group('A1 Partials', () {
+    test('column To', () {
+      final a1P = a1.build();
+      final result = a1P.parse("'[Year budget.xlsx]Jan'!B2:B").value;
+
+      expect(result, containsPair(#filename, 'Year budget.xlsx'));
+      expect(result, containsPair(#worksheet, 'Jan'));
+      expect(result, containsPair(#column1, 'B'));
+      expect(result, containsPair(#row1, '2'));
+      expect(result, containsPair(#column2, 'B'));
+      expect(result.containsKey(#row), isFalse);
+    });
+    test('no a1 to in range', () {
+      final a1P = a1.build();
+      final result = a1P.parse("'[Year budget.xlsx]Jan'!B2").value;
+
+      expect(result, containsPair(#filename, 'Year budget.xlsx'));
+      expect(result, containsPair(#worksheet, 'Jan'));
+      expect(result, containsPair(#column1, 'B'));
+      expect(result, containsPair(#row1, '2'));
+      expect(result.containsKey(#column2), isFalse);
+      expect(result.containsKey(#row2), isFalse);
+    });
+    test('no row in from range and no to', () {
+      final a1P = a1.build();
+      final result = a1P.parse("'[Year budget.xlsx]Jan'!B").value;
+
+      expect(result, containsPair(#filename, 'Year budget.xlsx'));
+      expect(result, containsPair(#worksheet, 'Jan'));
+      expect(result, containsPair(#column1, 'B'));
+      expect(result.containsKey(#row), isFalse);
+      expect(result.containsKey(#row1), isFalse);
+      expect(result.containsKey(#column2), isFalse);
+      expect(result.containsKey(#row2), isFalse);
+    });
+    test('no from or to range', () {
+      final a1P = a1.build();
+      final result = a1P.parse("'[Year budget.xlsx]Jan'").value;
+
+      expect(result, containsPair(#filename, 'Year budget.xlsx'));
+      expect(result, containsPair(#worksheet, 'Jan'));
+      expect(result.containsKey(#column), isFalse);
+      expect(result.containsKey(#column1), isFalse);
+      expect(result.containsKey(#row), isFalse);
+      expect(result.containsKey(#row1), isFalse);
+      expect(result.containsKey(#row1), isFalse);
+      expect(result.containsKey(#column2), isFalse);
+      expect(result.containsKey(#row2), isFalse);
     });
   });
 }

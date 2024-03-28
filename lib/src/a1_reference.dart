@@ -76,7 +76,7 @@ class A1Reference implements Comparable<A1Reference> {
   static A1Reference parse(String input) {
     final result = tryParse(input);
     if (result == null) {
-      throw FormatException('Invalid A1Range notation $input', input, 0);
+      throw FormatException('Invalid A1Reference notation $input', input, 0);
     }
     return result;
   }
@@ -96,6 +96,19 @@ class A1Reference implements Comparable<A1Reference> {
       return null;
     }
     final value = result.value;
+
+    // leverage the range to ensure the values are reordered if needed
+    final range = A1Range.fromPartials(
+      A1Partial(
+        value[#column1],
+        value[#row1] is String ? int.parse(value[#row1]) : null,
+      ),
+      A1Partial(
+        value[#column2],
+        value[#row2] is String ? int.parse(value[#row2]) : null,
+      ),
+    );
+    print(range);
     return A1Reference._(
       scheme: value[#scheme],
       authority: value[#authority],
@@ -108,12 +121,12 @@ class A1Reference implements Comparable<A1Reference> {
       fragment: value[#fragment],
       filename: value[#filename],
       worksheet: value[#worksheet],
-      column: value[#column],
-      column1: value[#column1],
-      row: value[#row] is String ? int.parse(value[#row]) : null,
-      row1: value[#row1] is String ? int.parse(value[#row1]) : null,
-      column2: value[#column2],
-      row2: value[#row2] is String ? int.parse(value[#row2]) : null,
+      column: range.from.letters,
+      column1: range.from.letters,
+      row: range.from.digits,
+      row1: range.from.digits,
+      column2: range.to.letters,
+      row2: range.to.digits,
     );
   }
 
@@ -126,17 +139,22 @@ class A1Reference implements Comparable<A1Reference> {
   /// return the A1Range
   A1Range get range => A1Range.fromPartials(from, to);
 
-  /// return a Uri based on passed info include the filename
+  /// return a Uri based on passed info without the filename
   Uri get uri => Uri(
       scheme: scheme,
-      userInfo: username != null
-          ? '$username${password != null ? ":$password" : ""}'
+      userInfo: username != null && username!.isNotEmpty
+          ? '$username${password != null && password!.isNotEmpty ? ":$password" : ""}'
           : null,
-      host: host,
-      port: port != null ? int.parse(port!) : null,
-      path: '$path${filename != null ? "/$filename" : ""}',
-      query: query,
-      fragment: fragment);
+      host: host != null && host!.isNotEmpty ? host : null,
+      port: port != null && port!.isNotEmpty ? int.parse(port!) : null,
+      path: path != null && path!.isNotEmpty ? path : null,
+      //'$path${filename != null ? "/$filename" : ""}',
+      query: query != null && query!.isNotEmpty ? query : null,
+      fragment: fragment != null && fragment!.isNotEmpty ? fragment : null);
+
+  /// return a Uri with the filename
+  Uri get uriWithFilename =>
+      uri.replace(path: '$path${filename != null ? "$filename" : ""}');
 
   /// If we are comparing two ranges in the same uris/filename/worksheet
   /// then defer to the A1Range comparison
@@ -156,20 +174,8 @@ class A1Reference implements Comparable<A1Reference> {
   String toString() {
     final reference = StringBuffer();
 
-    reference.write(scheme != null ? '$scheme://' : '');
-    final authority = switch ((
-      username?.isNotEmpty ?? false,
-      password?.isNotEmpty ?? false,
-      host?.isNotEmpty ?? false,
-      port?.isNotEmpty ?? false,
-    )) {
-      (true, true, true, true) => '$username:$password@$host:$port',
-      (true, false, true, true) => '$username@$host:$port',
-      (true, true, true, false) => '$username:$password@$host',
-      _ => '',
-    };
-    reference.write(authority);
-    reference.write(path ?? '');
+    reference.write(uri);
+    //reference.write(path ?? '');
     reference.write(filename != null ? '[$filename]' : '');
     reference.write(worksheet != null ? '$worksheet' : '');
 
@@ -186,4 +192,15 @@ class A1Reference implements Comparable<A1Reference> {
       _ => '',
     };
   }
+}
+
+/// This extension allows an [A1Reference] to be create from a [String]
+extension StringA1ReferenceExtension on String {
+  /// Return an [A1Reference] from the current [String] or throw
+  /// a [FormatException] see [A1Reference.parse].
+  A1Reference get a1Ref => A1Reference.parse(this);
+
+  /// Return an [A1Reference] from the current [String] or throw
+  /// a [FormatException] see [A1Reference.parse].
+  A1Reference get a1Reference => A1Reference.parse(this);
 }

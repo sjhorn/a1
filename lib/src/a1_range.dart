@@ -30,8 +30,14 @@ class A1Range implements Comparable<A1Range> {
   );
 
   /// Creates a range from two supplied A1Partials for from and to
-  static A1Range fromPartials(A1Partial from, A1Partial to) =>
-      A1Range._(from, to);
+  /// ensures from is less than or equal to to
+  static A1Range fromPartials(A1Partial from, A1Partial to) {
+    if (from <= to) {
+      return A1Range._(from, to);
+    } else {
+      return A1Range._(to, from);
+    }
+  }
 
   /// Parses a string containing an A1Range literal into an A1Range.
   ///
@@ -114,6 +120,9 @@ class A1Range implements Comparable<A1Range> {
   int get hashCode {
     return from.hashCode ^ to.hashCode;
   }
+
+  @override
+  String toString() => '$from${to.isAll ? "" : ":"}$to';
 }
 
 /// This extension allows an [A1Range] to be create from a [String]
