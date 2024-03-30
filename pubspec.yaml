@@ -8,7 +8,7 @@ screenshots:
   - description: 'A1 logo for A1 Notation'
     path: assets/a1_small.png
 topics:
-  - a1 notation
+  - a1-notation
   - spreadsheet
   - worksheet
   - parsing
