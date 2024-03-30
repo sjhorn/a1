@@ -67,6 +67,22 @@ void main() {
       expect(toPartial2.to.letters, equals('B'));
       expect(toPartial2.to.digits, isNull);
     });
+
+    test('valid hashcode', () {
+      expect(fromPartial1.hashCode, equals(A1Range.parse('AAA:B2').hashCode));
+    });
+    test('valid toString', () {
+      expect('A1:Z26'.a1Range.toString(), equals('A1:Z26'));
+      expect('A1:Z'.a1Range.toString(), equals('A1:Z'));
+      expect('A1'.a1Range.toString(), equals('A1'));
+      expect('A'.a1Range.toString(), equals('A'));
+    });
+    test('valid area', () {
+      expect('A1:Z26'.a1Range.area, equals(26 * 26));
+      expect('A1:A1'.a1Range.area, equals(1));
+      expect('A1:A2'.a1Range.area, equals(2));
+      expect('A1:B2'.a1Range.area, equals(4));
+    });
   });
 
   group('Operators', () {

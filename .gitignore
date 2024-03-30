@@ -1,4 +1,6 @@
 .dart_tool/
 pubspec.lock
 .DS_Store
-doc
+build/
+coverage/
+doc/

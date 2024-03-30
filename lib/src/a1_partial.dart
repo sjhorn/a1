@@ -59,7 +59,7 @@ class A1Partial implements Comparable {
       (A1Partial(), _, _) => _comparePartials(other),
 
       // Comparing to an unknown object
-      _ => throw UnimplementedError(),
+      _ => throw UnimplementedError('Comparing [$other] v [$this]'),
     };
   }
 

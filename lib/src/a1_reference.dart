@@ -5,14 +5,14 @@
 // Reference allows a cell or cell range to be referenced in another
 // sheet/file/url
 //
-// Sheet1!<A1RANGE> refers to the range in Sheet1.
+// Sheet1!A1:Z26 refers to the range in Sheet1.
 // Sheet1 refers to all the cells in Sheet1.
-// 'My Custom Sheet'!<A1RANGE> refers to all the cells in the first column of a
+// 'My Custom Sheet'!A1:Z26 refers to all the cells in the first column of a
 // sheet named "My Custom Sheet." Single quotes are required for sheet
 // names with spaces, special characters, or an alphanumeric combination.
 // 'My Custom Sheet' refers to all the cells in 'My Custom Sheet'.
-// 'C:\Documents and Settings\Username\My spreadsheets\[main sheet]Sheet1!<A1RANGE> file reference on local file system
-// 'C:\Documents and Settings\Username\My spreadsheets\[main sheet]Sheet1!<A1RANGE> file reference on local file system
+// 'C:\Documents and Settings\Username\My spreadsheets\[main sheet]Sheet1!A1:Z26 file reference on local file system
+// 'C:\Documents and Settings\Username\My spreadsheets\[main sheet]Sheet1!A1:Z26 file reference on local file system
 
 import 'package:petitparser/petitparser.dart';
 
@@ -71,7 +71,7 @@ class A1Reference implements Comparable<A1Reference> {
   ///
   /// Examples:
   /// ```dart
-  /// A1Reference a1ref = A1Reference.parse("'c:\\My Custom Sheet'!<A1RANGE>");
+  /// A1Reference a1ref = A1Reference.parse("'c:\\path\\[file]Sheet'!A1:Z26"));
   /// ```
   static A1Reference parse(String input) {
     final result = tryParse(input);
@@ -88,7 +88,7 @@ class A1Reference implements Comparable<A1Reference> {
   ///
   /// Examples:
   /// ```dart
-  /// A1Reference? a1 = A1Reference.tryParse("'c:\\My Custom Sheet'!<A1RANGE>");
+  /// A1Reference? a1 = A1Reference.tryParse("'c:\\path\\[file]Sheet'!A1:Z26"));
   /// ```
   static A1Reference? tryParse(String input) {
     final result = _parser.parse(input);
@@ -108,7 +108,7 @@ class A1Reference implements Comparable<A1Reference> {
         value[#row2] is String ? int.parse(value[#row2]) : null,
       ),
     );
-    print(range);
+
     return A1Reference._(
       scheme: value[#scheme],
       authority: value[#authority],

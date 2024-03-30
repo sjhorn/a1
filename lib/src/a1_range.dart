@@ -29,9 +29,9 @@ class A1Range implements Comparable<A1Range> {
   );
 
   /// Creates a range from two supplied A1Partials for from and to
-  /// ensures from is less than or equal to to
+  /// ensures 'from' is less than or equal to 'to' when not all
   static A1Range fromPartials(A1Partial from, A1Partial to) {
-    if (from <= to) {
+    if ((from.isAll || to.isAll) || from <= to) {
       return A1Range._(from, to);
     } else {
       return A1Range._(to, from);
@@ -82,11 +82,7 @@ class A1Range implements Comparable<A1Range> {
     final left = A1Partial(value[#column1], int.tryParse(value[#row1] ?? ''));
     final right = A1Partial(value[#column2], int.tryParse(value[#row2] ?? ''));
 
-    if (left <= right) {
-      return A1Range._(left, right);
-    } else {
-      return A1Range._(right, left);
-    }
+    return A1Range.fromPartials(left, right);
   }
 
   /// Compare the area of two ranges to determine which is bigger
@@ -120,8 +116,12 @@ class A1Range implements Comparable<A1Range> {
     return from.hashCode ^ to.hashCode;
   }
 
+  /// Print the range in the form A1:B2, A1:B, A1, A, or ''
   @override
   String toString() => '$from${to.isAll ? "" : ":"}$to';
+
+  /// Area of this range, for items unbounded ranges, returns double.infinity
+  double get area => from.a1?.area(to.a1) ?? double.infinity;
 }
 
 /// This extension allows an [A1Range] to be create from a [String]

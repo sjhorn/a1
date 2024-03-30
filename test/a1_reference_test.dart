@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 // Reference allows a cell or cell range to be referenced in another
 // sheet/file/url
 //
-// Sheet1!<A1RANGE> refers to the range in Sheet1.
+// Sheet1!A1:Z26 refers to the range in Sheet1.
 //
 
 void main() {
@@ -12,31 +12,32 @@ void main() {
     test('from a worsheet without quotes and range', () {
       final a1r = A1Reference.parse("Sheet1!A1:Z2");
       expect(a1r, isA<A1Reference>());
-      print(a1r);
       expect(a1r.worksheet, equals('Sheet1'));
       expect(a1r.from.a1, equals('A1'.a1));
       expect(a1r.to.a1, equals('Z2'.a1));
+      expect(a1r.toString(), equals("'Sheet1'!A1:Z2"));
     });
     test('from a worsheet and range', () {
       final a1r = A1Reference.parse("'Sheet1'!A1:Z2");
       expect(a1r, isA<A1Reference>());
-      print(a1r);
       expect(a1r.worksheet, equals('Sheet1'));
       expect(a1r.from.a1, equals('A1'.a1));
       expect(a1r.to.a1, equals('Z2'.a1));
+      expect(a1r.toString(), equals("'Sheet1'!A1:Z2"));
     });
 
     test('from a file path and range', () {
       final a1r =
           A1Reference.parse("'c:\\path1\\path2\\[file name]Sheet1'!A1:Z2");
       expect(a1r, isA<A1Reference>());
-      print(a1r);
       expect(a1r.scheme, equals('c'));
       expect(a1r.path, equals('/path1/path2/'));
       expect(a1r.filename, equals('file name'));
       expect(a1r.worksheet, equals('Sheet1'));
       expect(a1r.from.a1, equals('A1'.a1));
       expect(a1r.to.a1, equals('Z2'.a1));
+      expect(
+          a1r.toString(), equals("'c:/path1/path2/[file name]Sheet1'!A1:Z2"));
     });
 
     test('from a https path and range', () {
@@ -52,6 +53,27 @@ void main() {
       expect(a1r.worksheet, equals('Sheet1'));
       expect(a1r.from.a1, equals('A1'.a1));
       expect(a1r.to.a1, equals('Z2'.a1));
+    });
+    test('from a https with username and password,path and range', () {
+      final a1r = A1Reference.parse(
+          "'https://user:pass@test.com/path1/path2/[file name]Sheet1'!A1:Z2");
+      expect(a1r, isA<A1Reference>());
+
+      expect(a1r.scheme, equals('https'));
+      expect(a1r.host, equals('test.com'));
+      expect(a1r.username, equals('user'));
+      expect(a1r.password, equals('pass'));
+      expect(a1r.path, equals('/path1/path2/'));
+      expect(a1r.filename, equals('file name'));
+      expect(a1r.worksheet, equals('Sheet1'));
+      expect(a1r.from.a1, equals('A1'.a1));
+      expect(a1r.to.a1, equals('Z2'.a1));
+      expect(
+          a1r.toString(),
+          equals(
+              "'https://user:pass@test.com/path1/path2/[file name]Sheet1'!A1:Z2"));
+      expect(a1r.uriWithFilename.toString(),
+          equals("https://user:pass@test.com/path1/path2/file%20name"));
     });
     test('with a partial range column to', () {
       var a1r = A1Reference.parse(
@@ -98,6 +120,13 @@ void main() {
       expect(a1r.from, equals(A1Partial(null, null)));
       expect(a1r.to, equals(A1Partial(null, null)));
     });
+
+    test('invalid reference', () {
+      expect(() => ''.a1Ref, throwsA(isA<FormatException>()));
+      expect(() => ':a1'.a1Ref, throwsA(isA<FormatException>()));
+      expect(() => '\\'.a1Ref, throwsA(isA<FormatException>()));
+      expect(() => '//'.a1Ref, throwsA(isA<FormatException>()));
+    });
   });
 
   group('Operators', () {
@@ -141,7 +170,8 @@ void main() {
       expect(a1Ref.from.row, equals(0)); // 1
       expect(a1Ref.to.column, equals(25)); // Z
       expect(a1Ref.to.row, equals(25)); // 26
-      print(a1Ref);
+      expect(a1Ref.toString(),
+          equals("'file://c/path1/path2/[file name]Work sheet'!A1:Z26"));
     });
   });
 }

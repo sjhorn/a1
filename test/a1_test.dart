@@ -52,6 +52,25 @@ void main() {
       expect(fromVector.row, equals(fromString.row));
       expect(fromString.row, 0);
     });
+
+    test('valid vector', () {
+      expect(fromString.vector, equals((702, 0)));
+      expect(fromVector.vector, equals((702, 0)));
+    });
+    test('valid hashCode', () {
+      expect(fromString.hashCode, fromVector.hashCode);
+    });
+
+    test('< and <=', () {
+      expect('A1'.a1 < 'A2'.a1, isTrue);
+      expect('A1'.a1 <= 'A1'.a1, isTrue);
+      expect('A1'.a1 < 'Z26'.a1, isTrue);
+    });
+    test('> and >=', () {
+      expect('Z26'.a1 > 'C1'.a1, isTrue);
+      expect('Z26'.a1 >= 'Z1'.a1, isTrue);
+      expect('D21'.a1 > 'Z1'.a1, isTrue);
+    });
   });
   group('Move to adjacent cells', () {
     final a1 = A1.parse('B2');
@@ -129,6 +148,14 @@ void main() {
       expect(a1List[0], equals('a1'.a1));
       expect(a1List[1], equals('B2'.a1));
       expect(a1List[2], equals('c3'.a1));
+    });
+    test('isLetter', () {
+      expect('A'.codeUnits.first.isA1Letter, isTrue);
+      expect('@'.codeUnits.first.isA1Letter, isFalse);
+    });
+    test('isDigit', () {
+      expect('A'.codeUnits.first.isA1Digit, isFalse);
+      expect('2'.codeUnits.first.isA1Digit, isTrue);
     });
   });
 }

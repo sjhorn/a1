@@ -1,17 +1,22 @@
 name: a1
-description: A package that implements A1 Notation used in spreadsheets and  worksheets
+version: 1.0.2
+
+homepage: https://pub.dev/packages/a1
+repository: https://github.com/sjhorn/a1
+description: A package that implements A1 Notation used in spreadsheets and worksheets
 screenshots:
   - description: 'A1 logo for A1 Notation'
     path: assets/a1_small.png
-version: 1.0.1
-repository: https://github.com/sjhorn/a1
+topics:
+  - a1 notation
+  - spreadsheet
+  - worksheet
+  - parsing
 
 environment:
   sdk: ^3.3.0
-
 dependencies:
   petitparser: ^6.0.2
-
 dev_dependencies:
   lints: ^3.0.0
   test: ^1.24.0

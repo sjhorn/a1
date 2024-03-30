@@ -31,8 +31,8 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
   // 'D:\Reports\[Sales.xlsx]Jan sales'!B2:B5
   // 'https://sharepoint.com/path1/path2/[Sales.xlsx]Jan sales'!B2:B5
   // 'C:\Users\sumit\Desktop\[Example File.xlsx]Sheet1'!$A$1
-  // 'C:\Documents and Settings\Username\My spreadsheets\[main sheet.xls]Sheet1'!<A1RANGE> file reference on local file system
-  // 'C:\Documents and Settings\Username\My spreadsheets\[main sheet.xlsx]Sheet1'!<A1RANGE> file reference on local file system
+  // 'C:\Documents and Settings\Username\My spreadsheets\[main sheet.xls]Sheet1'!A1:Z26 file reference on local file system
+  // 'C:\Documents and Settings\Username\My spreadsheets\[main sheet.xlsx]Sheet1'!A1:Z26 file reference on local file system
   // Windows / DOS file reference
   //
   Parser<SymbolMap> uriReference() => seq2(
@@ -112,9 +112,9 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
   // A worksheet reference includes Worksheet with range
   //
   // Examples:
-  // Sheet1!<A1RANGE> refers to the range in Sheet1.
+  // Sheet1!A1:Z26 refers to the range in Sheet1.
   // Sheet1 refers to all the cells in Sheet1.
-  // 'My Custom Sheet'!<A1RANGE> refers to all the cells in the first column of a
+  // 'My Custom Sheet'!A1:Z26 refers to all the cells in the first column of a
   // sheet named "My Custom Sheet." Single quotes are required for sheet
   // names with spaces, special characters, or an alphanumeric combination.
   //

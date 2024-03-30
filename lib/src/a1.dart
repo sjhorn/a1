@@ -215,9 +215,12 @@ class A1 implements Comparable<A1> {
   bool operator >=(A1 other) => compareTo(other) >= 0;
 
   // Area between two A1s
-  int area(A1 other) =>
-      (max(column, other.column) - min(column, other.column)) *
-          (max(row, other.row) - min(row, other.row)) as int;
+  double area(A1? other) {
+    if (other == null) return double.infinity;
+    final area = (1.0 + max(column, other.column) - min(column, other.column)) *
+        (1.0 + max(row, other.row) - min(row, other.row));
+    return area == 0.0 ? 1.0 : area;
+  }
 }
 
 /// Utility extension to help the comparison be more expressive
