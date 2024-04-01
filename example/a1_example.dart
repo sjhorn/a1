@@ -14,7 +14,10 @@ void main() {
   print('b2'.a1.row); // 1
 
   // List of a1s
-  print(['a1', 'b2', 'C3', 'z4'].a1); // List of A1 Classs A1,B2,C3,Z4
+  print(['a1', 'b2', 'C3', 'z4'].a1); // List of A1 [A1,B2,C3,Z4]
+
+  // Set of a1s
+  print({'a1', 'b2', 'C3', 'z4'}.a1); // Set of A1  {A1,B2,C3,Z4}
 
   print(['a1', 'b2', 'C3', 'z4'].a1.map((a1) => a1.column));
   // [0, 2, 3, 26]

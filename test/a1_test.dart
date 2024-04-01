@@ -149,6 +149,11 @@ void main() {
       expect(a1List[1], equals('B2'.a1));
       expect(a1List[2], equals('c3'.a1));
     });
+
+    test('string set to a1 set', () {
+      final a1Set = {'a1', 'B2', 'c3'}.a1;
+      expect(a1Set, containsAll({'a1'.a1, 'B2'.a1, 'c3'.a1}));
+    });
     test('isLetter', () {
       expect('A'.codeUnits.first.isA1Letter, isTrue);
       expect('@'.codeUnits.first.isA1Letter, isFalse);

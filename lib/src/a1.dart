@@ -247,3 +247,13 @@ extension StringListA1Extension on List<String> {
   /// ```
   Iterable<A1> get a1 => map((e) => e.a1);
 }
+
+extension StringSetA1Extension on Set<String> {
+  /// Return a [Set<A1>] from the current [Set<String>] or throw
+  /// a [FormatException] see [A1.parse].
+  /// Example:
+  /// ```dart
+  /// Set<A1> a1Set = {'a1','b2','c3}.a1; // <A1>[A1,A2,A3]
+  /// ```
+  Set<A1> get a1 => map((e) => e.a1).toSet();
+}

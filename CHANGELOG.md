@@ -1,3 +1,7 @@
+## 1.0.3
+
+- Added support for A1 as an extension on Set to simplify creating an a1 set from String 
+
 ## 1.0.2
 
 - Added A1Range and A1Reference examples to readme and example
