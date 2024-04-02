@@ -248,6 +248,8 @@ extension StringListA1Extension on List<String> {
   Iterable<A1> get a1 => map((e) => e.a1);
 }
 
+/// This extension allows a [Set] of [String]s to be converted to
+/// a [Set] of [A1]
 extension StringSetA1Extension on Set<String> {
   /// Return a [Set<A1>] from the current [Set<String>] or throw
   /// a [FormatException] see [A1.parse].
@@ -256,4 +258,16 @@ extension StringSetA1Extension on Set<String> {
   /// Set<A1> a1Set = {'a1','b2','c3}.a1; // <A1>[A1,A2,A3]
   /// ```
   Set<A1> get a1 => map((e) => e.a1).toSet();
+}
+
+/// This extension allows a [Map<String,String>] to be converted to
+/// a [Map<A1,A1> to assist with cell movement tracking
+extension MapA1Extension on Map<String, String> {
+  /// Return a [Map<A1,A1>] from the current [Map<String,String>] or throw
+  /// a [FormatException] see [A1.parse].
+  /// Example:
+  /// ```dart
+  /// Map<A1,A1> moves = {'a1':'b2','c3':'c4'}.a1; // Map<A1,A1>[A1:B2,C3:C4]
+  /// ```
+  Map<A1, A1> get a1 => map((key, value) => MapEntry(key.a1, value.a1));
 }

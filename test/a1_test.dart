@@ -154,6 +154,11 @@ void main() {
       final a1Set = {'a1', 'B2', 'c3'}.a1;
       expect(a1Set, containsAll({'a1'.a1, 'B2'.a1, 'c3'.a1}));
     });
+    test('Map of String:String strings to Map of A1:A1s', () {
+      final moves = {'a1': 'd1', 'B2': 'c3'}.a1;
+      expect(moves, containsPair('A1'.a1, 'D1'.a1));
+      expect(moves, containsPair('B2'.a1, 'C3'.a1));
+    });
     test('isLetter', () {
       expect('A'.codeUnits.first.isA1Letter, isTrue);
       expect('@'.codeUnits.first.isA1Letter, isFalse);

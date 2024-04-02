@@ -1,3 +1,7 @@
+## 1.0.4
+
+- Added support for A1 mapping as an extension on Map<String,String> to Map<A1,A1> to assist with A1 moves
+
 ## 1.0.3
 
 - Added support for A1 as an extension on Set to simplify creating an a1 set from String 
