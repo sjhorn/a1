@@ -33,6 +33,7 @@ void main() {
       expect(a1.column, equals(25));
       expect(a1.row, equals(2));
       expect(a1.toString(), equals('Z3'));
+      expect(() => A1.fromVector(1, -1), throwsA(isA<FormatException>()));
     });
 
     test('throws from an invalid vector', () {

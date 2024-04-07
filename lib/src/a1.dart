@@ -91,22 +91,10 @@ class A1 implements Comparable<A1> {
   /// a1 = A1.fromVector(1,-1); // FormatException
   /// ```
   A1.fromVector(int column, int row) {
-    if (column < 0 || row < 0) {
-      throw FormatException('column & row must be positive ($column,$row)');
+    if (row.isNegative) {
+      throw FormatException('row $row must be positive');
     }
-
-    final codeUnits = <int>[];
-    if (column < 26) {
-      codeUnits.add(65 + column);
-    } else {
-      var evaluationIndex = column;
-      while (evaluationIndex >= 26) {
-        codeUnits.add(65 + evaluationIndex % 26);
-        evaluationIndex = (evaluationIndex / 26 - 1).floor();
-      }
-      codeUnits.add(65 + evaluationIndex);
-    }
-    letters = String.fromCharCodes(codeUnits.reversed);
+    letters = column.a1Letters;
     digits = row + 1;
   }
 
@@ -227,6 +215,27 @@ class A1 implements Comparable<A1> {
 extension A1Tools on int {
   bool get isA1Letter => this >= 'A'.codeUnitAt(0) && this <= 'Z'.codeUnitAt(0);
   bool get isA1Digit => this >= '0'.codeUnitAt(0) && this <= '9'.codeUnitAt(0);
+
+  /// Return the letters for an [A1] from this int or throw
+  /// a [FormatException].
+  String get a1Letters {
+    if (isNegative) {
+      throw FormatException('column $this must be positive');
+    }
+
+    final codeUnits = <int>[];
+    if (this < 26) {
+      codeUnits.add(65 + this);
+    } else {
+      var evaluationIndex = this;
+      while (evaluationIndex >= 26) {
+        codeUnits.add(65 + evaluationIndex % 26);
+        evaluationIndex = (evaluationIndex / 26 - 1).floor();
+      }
+      codeUnits.add(65 + evaluationIndex);
+    }
+    return String.fromCharCodes(codeUnits.reversed);
+  }
 }
 
 /// This extension allows an [A1] to be create from a [String]

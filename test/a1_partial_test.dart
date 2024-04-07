@@ -7,6 +7,10 @@ void main() {
     final a1p2 = A1Partial('B', null);
     final a1p3 = A1Partial(null, 1);
     final a1p4 = A1Partial(null, null);
+    final a1p5 = A1Partial.fromVector(1, 0);
+    test('vector matches parse', () {
+      expect(a1p1 == a1p5, isTrue);
+    });
     test('compare A1 with A1,A,1,null', () {
       expect(a1p1.compareTo(a1p1), equals(0));
       expect(a1p1.compareTo(a1p2), equals(0));

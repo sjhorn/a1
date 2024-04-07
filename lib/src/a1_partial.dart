@@ -16,11 +16,23 @@ class A1Partial implements Comparable {
   /// Examples:
   /// ```dart
   /// A1Partial a1p = A1Partial('A', 1); //A1
-  /// a1p = A1Partial('b'); // B <all rows>
-  /// a1p = A1Partial('1'); // 1 <all columns>
-  /// a1p = A1Partial('');  // <all columns & rows>
+  /// a1p = A1Partial('b', null); // B <all rows>
+  /// a1p = A1Partial(null, '1'); // 1 <all columns>
+  /// a1p = A1Partial(null, null);  // <all columns & rows>
   /// ```
   A1Partial(String? letters, this.digits) : letters = letters?.toUpperCase();
+
+  /// Create a A1Partial from the partial vector
+  ///
+  /// Examples:
+  /// ```dart
+  /// A1Partial a1p = A1Partial.fromVector(0, 0); //A1
+  /// a1p = A1Partial.fromVector(1, null); // B <all rows>
+  /// a1p = A1Partial.fromVector(null, 1); // 1 <all columns>
+  /// a1p = A1Partial.fromVector(null, null);  // <all columns & rows>
+  /// ```
+  factory A1Partial.fromVector(int? column, int? row) =>
+      A1Partial(column?.a1Letters, row != null ? row + 1 : null);
 
   /// If this partial has letters and digitis it get be returned as A1
   /// otherwise a null is returned

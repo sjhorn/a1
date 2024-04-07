@@ -1,3 +1,8 @@
+## 1.0.6
+
+- Enhanced A1Partial to accept a vector
+- Moved the int to A1 Letters into an extension on int
+
 ## 1.0.5
 
 - Added testing is an A1 is in an A1Range with contains method
