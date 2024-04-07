@@ -85,7 +85,7 @@ class A1Partial implements Comparable {
       (null, null, int(), null, null, int()) => row!.compareTo(other.row!),
 
       // A vs 1,2,3 treat any columns as larger
-      (null, int(), null, null, null, int()) => 1,
+      (null, int(), null, null, null, int()) => other.column!.compareTo(row!),
       // 1 vs A,B,C treat any columns as larger
       (null, null, int(), null, int(), null) => -1,
 

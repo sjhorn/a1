@@ -122,6 +122,42 @@ class A1Range implements Comparable<A1Range> {
 
   /// Area of this range, for items unbounded ranges, returns double.infinity
   double get area => from.a1?.area(to.a1) ?? double.infinity;
+
+  /// Does this [A1Range] contain this [A1]
+  bool contains(A1 a1) {
+    return switch ((from.column, from.row, to.column, to.row)) {
+      (int(), int(), int(), int()) => a1.column >= from.column! &&
+          a1.row >= from.row! &&
+          a1.column <= to.column! &&
+          a1.row <= to.row!,
+      (null, int(), int(), int()) =>
+        a1.row >= from.row! && a1.column <= to.column! && a1.row <= to.row!,
+      (null, null, int(), int()) =>
+        a1.column <= to.column! && a1.row <= to.row!,
+      (null, null, null, null) => true,
+      (int(), null, int(), int()) => a1.column >= from.column! &&
+          a1.column <= to.column! &&
+          a1.row <= to.row!,
+      (int(), null, null, int()) =>
+        a1.column >= from.column! && a1.row <= to.row!,
+      (int(), null, null, null) => a1.column >= from.column!,
+      (int(), int(), null, int()) =>
+        a1.column >= from.column! && a1.row >= from.row! && a1.row <= to.row!,
+      (int(), int(), null, null) =>
+        a1.column >= from.column! && a1.row >= from.row!,
+      (int(), int(), int(), null) => a1.column >= from.column! &&
+          a1.row >= from.row! &&
+          a1.column <= to.column!,
+      (int(), null, int(), null) =>
+        a1.column >= from.column! && a1.column <= to.column!,
+      (null, int(), int(), null) =>
+        a1.row <= from.row! && a1.column <= to.column!,
+      (null, int(), null, int()) => a1.row >= from.row! && a1.row <= to.row!,
+      (null, int(), null, null) => a1.row >= from.row!,
+      (null, null, int(), null) => a1.column <= to.column!,
+      (null, null, null, int()) => a1.row <= to.row!,
+    };
+  }
 }
 
 /// This extension allows an [A1Range] to be create from a [String]

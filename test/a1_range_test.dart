@@ -83,6 +83,36 @@ void main() {
       expect('A1:A2'.a1Range.area, equals(2));
       expect('A1:B2'.a1Range.area, equals(4));
     });
+    test('contains', () {
+      expect('A1:a6'.a1Range.contains('a2'.a1), isTrue);
+      expect('A1:a6'.a1Range.contains('b2'.a1), isFalse);
+      expect('A1:a1'.a1Range.contains('a2'.a1), isFalse);
+      expect('1:a1'.a1Range.contains('a2'.a1), isFalse);
+      expect('1:a3'.a1Range.contains('a2'.a1), isTrue);
+      expect('a:a3'.a1Range.contains('a2'.a1), isTrue);
+
+      // Some unparsables
+      final a1 = A1Partial('A', 1);
+      final a = A1Partial('A', null);
+      final one = A1Partial(null, 1);
+      final two = A1Partial(null, 2);
+      final b = A1Partial('B', null);
+      final null1 = A1Partial(null, null);
+
+      expect(A1Range.fromPartials(a, b).contains('a2'.a1), isTrue);
+      expect(A1Range.fromPartials(a1, b).contains('a2'.a1), isTrue);
+      expect(A1Range.fromPartials(a1, null1).contains('a2'.a1), isTrue);
+      expect(A1Range.fromPartials(a, one).contains('a2'.a1), isFalse);
+      expect(A1Range.fromPartials(null1, one).contains('a2'.a1), isFalse);
+      expect(A1Range.fromPartials(null1, one).contains('a1'.a1), isTrue);
+      expect(A1Range.fromPartials(null1, null1).contains('a1'.a1), isTrue);
+      expect(A1Range.fromPartials(null1, a1).contains('a2'.a1), isFalse);
+      expect(A1Range.fromPartials(a1, one).contains('a2'.a1), isFalse);
+      expect(A1Range.fromPartials(two, a).contains('a2'.a1), isTrue);
+
+      expect('A'.a1Range.contains('a2'.a1), isTrue);
+      expect('B'.a1Range.contains('a2'.a1), isFalse);
+    });
   });
 
   group('Operators', () {

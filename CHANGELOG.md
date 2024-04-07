@@ -1,3 +1,9 @@
+## 1.0.5
+
+- Added testing is an A1 is in an A1Range with contains method
+- Slight tweak on comparing a A1Partial eg. A with 1, it will now use the larger index rather than have A always be larger
+- Adjusted tests for above tweak
+
 ## 1.0.4
 
 - Added support for A1 mapping as an extension on Map<String,String> to Map<A1,A1> to assist with A1 moves

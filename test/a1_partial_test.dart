@@ -3,8 +3,8 @@ import 'package:test/test.dart';
 
 void main() {
   group('A1 Partials', () {
-    final a1p1 = A1Partial('A', 1);
-    final a1p2 = A1Partial('A', null);
+    final a1p1 = A1Partial('B', 1);
+    final a1p2 = A1Partial('B', null);
     final a1p3 = A1Partial(null, 1);
     final a1p4 = A1Partial(null, null);
     test('compare A1 with A1,A,1,null', () {
@@ -51,8 +51,8 @@ void main() {
     });
 
     test('hashcode', () {
-      expect(a1p1.hashCode, equals(A1Partial('A', 1).hashCode));
-      expect(a1p2.hashCode, equals(A1Partial('A', null).hashCode));
+      expect(a1p1.hashCode, equals(A1Partial('B', 1).hashCode));
+      expect(a1p2.hashCode, equals(A1Partial('B', null).hashCode));
       expect(a1p3.hashCode, equals(A1Partial(null, 1).hashCode));
       expect(a1p4.hashCode, equals(A1Partial(null, null).hashCode));
     });
