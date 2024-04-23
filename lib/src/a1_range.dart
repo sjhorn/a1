@@ -17,16 +17,31 @@ class A1Range implements Comparable<A1Range> {
   static final _parser = _a1n.buildFrom(_a1n.range()).end();
 
   /// range from A1Partial
-  final A1Partial from;
+  late final A1Partial from;
 
   /// range to A1Partial
-  final A1Partial to;
+  late final A1Partial to;
 
   /// optional anchor a1
   final A1? anchor;
 
   /// Private contructor
-  A1Range._(this.from, this.to, {this.anchor});
+  A1Range._(A1Partial from, A1Partial to, {this.anchor}) {
+    // normalise the reverse diagonal to always have
+    // eg. A2:B3
+    switch ((from.a1, to.a1)) {
+      case (
+            A1(column: var columnFrom, row: var rowFrom),
+            A1(column: var columnTo, row: var rowTo)
+          )
+          when columnTo < columnFrom:
+        this.from = A1Partial.fromVector(columnTo, rowFrom);
+        this.to = A1Partial.fromVector(columnFrom, rowTo);
+      default:
+        this.from = from;
+        this.to = to;
+    }
+  }
 
   /// Creates a range from two supplied A1Partials for from and to
   /// ensures 'from' is less than or equal to 'to' when not all

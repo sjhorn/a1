@@ -37,6 +37,13 @@ void main() {
       expect(a1r, equals('ZZA123:a2'.a1Range));
       expect(a1r?.anchor, equals('ZZA123'.a1));
     });
+    test('where the to column is greater than the from column', () {
+      final a1r = 'B2:A3'.a1Range;
+      expect(a1r.from, equals('a2'.a1));
+      expect(a1r.to, equals('b3'.a1));
+      expect(a1r, equals('a2:b3'.a1Range));
+      expect(a1r.anchor, equals('b2'.a1));
+    });
     test('from A1s', () {
       var a1r = A1Range.fromA1s('a2'.a1, 'ZZA123'.a1);
       expect(a1r.from, equals('a2'.a1));

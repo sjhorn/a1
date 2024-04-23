@@ -1,3 +1,7 @@
+## 1.0.9
+
+- Fix edge case in a A1Range where the FROM has a greater column than the TO
+
 ## 1.0.8
 
 - Enhanced A1Range with an optional anchor cell
