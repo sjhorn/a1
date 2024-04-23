@@ -35,18 +35,21 @@ void main() {
       expect(a1r?.from, equals('a2'.a1));
       expect(a1r?.to, equals('ZZA123'.a1));
       expect(a1r, equals('ZZA123:a2'.a1Range));
+      expect(a1r?.anchor, equals('ZZA123'.a1));
     });
     test('from A1s', () {
       var a1r = A1Range.fromA1s('a2'.a1, 'ZZA123'.a1);
       expect(a1r.from, equals('a2'.a1));
       expect(a1r.to, equals('ZZA123'.a1));
       expect(a1r, equals('ZZA123:a2'.a1Range));
+      expect(a1r.anchor, equals('a2'.a1));
 
       // wrong order
       a1r = A1Range.fromA1s('ZZA123'.a1, 'a2'.a1);
       expect(a1r.from, equals('a2'.a1));
       expect(a1r.to, equals('ZZA123'.a1));
       expect(a1r, equals('ZZA123:a2'.a1Range));
+      expect(a1r.anchor, equals('ZZA123'.a1));
     });
 
     test('returns null when tryParsing an invalid A1Range string', () {
@@ -72,6 +75,7 @@ void main() {
       expect(fromPartial1.to.digits, isNull);
       expect(fromPartial2.from.letters, isNull);
       expect(fromPartial2.from.digits, equals(1));
+      expect(fromPartial2.anchor, isNull);
     });
     test('valid to letters', () {
       expect(toPartial1.to.letters, isNull);

@@ -22,31 +22,33 @@ class A1Range implements Comparable<A1Range> {
   /// range to A1Partial
   final A1Partial to;
 
+  /// optional anchor a1
+  final A1? anchor;
+
   /// Private contructor
-  A1Range._(
-    this.from,
-    this.to,
-  );
+  A1Range._(this.from, this.to, {this.anchor});
 
   /// Creates a range from two supplied A1Partials for from and to
   /// ensures 'from' is less than or equal to 'to' when not all
+  /// if the from is an A1 is will be treated as the anchor
   static A1Range fromPartials(A1Partial from, A1Partial to) {
     if ((from.isAll || to.isAll) || from <= to) {
-      return A1Range._(from, to);
+      return A1Range._(from, to, anchor: from.a1);
     } else {
-      return A1Range._(to, from);
+      return A1Range._(to, from, anchor: from.a1);
     }
   }
 
   /// Creates a range from two supplied A1s for from and to
-  /// ensures 'from' is less than or equal to 'to' when not all
+  /// ensures 'from' is less than or equal to 'to'
+  /// the fromA1 will be used as the anchor in the range
   static A1Range fromA1s(A1 fromA1, A1 toA1) {
     final from = A1Partial.fromA1(fromA1);
     final to = A1Partial.fromA1(toA1);
     if (from <= to) {
-      return A1Range._(from, to);
+      return A1Range._(from, to, anchor: fromA1);
     } else {
-      return A1Range._(to, from);
+      return A1Range._(to, from, anchor: fromA1);
     }
   }
 

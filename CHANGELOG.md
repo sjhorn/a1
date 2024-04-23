@@ -1,3 +1,7 @@
+## 1.0.8
+
+- Enhanced A1Range with an optional anchor cell
+
 ## 1.0.7
 
 - Enhanced A1Range with fromA1s method.
