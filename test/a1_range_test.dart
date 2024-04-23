@@ -36,6 +36,18 @@ void main() {
       expect(a1r?.to, equals('ZZA123'.a1));
       expect(a1r, equals('ZZA123:a2'.a1Range));
     });
+    test('from A1s', () {
+      var a1r = A1Range.fromA1s('a2'.a1, 'ZZA123'.a1);
+      expect(a1r.from, equals('a2'.a1));
+      expect(a1r.to, equals('ZZA123'.a1));
+      expect(a1r, equals('ZZA123:a2'.a1Range));
+
+      // wrong order
+      a1r = A1Range.fromA1s('ZZA123'.a1, 'a2'.a1);
+      expect(a1r.from, equals('a2'.a1));
+      expect(a1r.to, equals('ZZA123'.a1));
+      expect(a1r, equals('ZZA123:a2'.a1Range));
+    });
 
     test('returns null when tryParsing an invalid A1Range string', () {
       final result = A1Range.tryParse('123');

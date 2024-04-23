@@ -22,6 +22,14 @@ class A1Partial implements Comparable {
   /// ```
   A1Partial(String? letters, this.digits) : letters = letters?.toUpperCase();
 
+  /// Create a A1Partial from an A1
+  ///
+  /// Examples:
+  /// ```dart
+  /// A1Partial a1p = A1Partial.fromA1('a1'.a1); //A1
+  /// ```
+  factory A1Partial.fromA1(A1 a1) => A1Partial(a1.letters, a1.digits);
+
   /// Create a A1Partial from the partial vector
   ///
   /// Examples:

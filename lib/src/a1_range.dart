@@ -38,6 +38,18 @@ class A1Range implements Comparable<A1Range> {
     }
   }
 
+  /// Creates a range from two supplied A1s for from and to
+  /// ensures 'from' is less than or equal to 'to' when not all
+  static A1Range fromA1s(A1 fromA1, A1 toA1) {
+    final from = A1Partial.fromA1(fromA1);
+    final to = A1Partial.fromA1(toA1);
+    if (from <= to) {
+      return A1Range._(from, to);
+    } else {
+      return A1Range._(to, from);
+    }
+  }
+
   /// Parses a string containing an A1Range literal into an A1Range.
   ///
   /// If that fails, too, it throws a [FormatException].

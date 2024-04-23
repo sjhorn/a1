@@ -1,3 +1,8 @@
+## 1.0.7
+
+- Enhanced A1Range with fromA1s method.
+- Enhanced A1Partial with fromA1 method.
+
 ## 1.0.6
 
 - Enhanced A1Partial to accept a vector
