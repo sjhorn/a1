@@ -187,6 +187,22 @@ class A1Range implements Comparable<A1Range> {
       (null, null, null, int()) => a1.row <= to.row!,
     };
   }
+
+  /// Does this [A1Range] have this [A1] at one of its corners.
+  bool hasCorner(A1 a1) {
+    if (from.a1 == a1 || to.a1 == a1) {
+      return true;
+    }
+
+    if (from.a1 != null &&
+        to.a1 != null &&
+        (A1.fromVector(from.a1!.column, to.a1!.row) == a1 ||
+            A1.fromVector(to.a1!.column, from.a1!.row) == a1)) {
+      return true;
+    }
+
+    return false;
+  }
 }
 
 /// This extension allows an [A1Range] to be create from a [String]

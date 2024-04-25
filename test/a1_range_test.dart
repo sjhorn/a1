@@ -37,7 +37,30 @@ void main() {
       expect(a1r, equals('ZZA123:a2'.a1Range));
       expect(a1r?.anchor, equals('ZZA123'.a1));
     });
-    test('where the to column is greater than the from column', () {
+    test('where the to column/row is greater than the from column/row ', () {
+      final a1r = 'C2:A5'.a1Range;
+      expect(a1r.from, equals('a2'.a1));
+      expect(a1r.to, equals('c5'.a1));
+      expect(a1r, equals('a2:c5'.a1Range));
+      expect(a1r.anchor, equals('c2'.a1));
+    });
+    test('where the to column/row is greater than the from column/row ', () {
+      final a1r = 'C2:A5'.a1Range;
+      expect(a1r.from, equals('a2'.a1));
+      expect(a1r.to, equals('c5'.a1));
+      expect(a1r, equals('a2:c5'.a1Range));
+      expect(a1r.anchor, equals('c2'.a1));
+    });
+    test('corner test ', () {
+      final a1r = 'C2:A5'.a1Range;
+      expect(a1r.hasCorner('A2'.a1), isTrue);
+      expect(a1r.hasCorner('C2'.a1), isTrue);
+      expect(a1r.hasCorner('A5'.a1), isTrue);
+      expect(a1r.hasCorner('C5'.a1), isTrue);
+    });
+    test(
+        'where the to column is greater than the from column, but row is greater',
+        () {
       final a1r = 'B2:A3'.a1Range;
       expect(a1r.from, equals('a2'.a1));
       expect(a1r.to, equals('b3'.a1));

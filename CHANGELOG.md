@@ -1,3 +1,7 @@
+## 1.0.10
+
+- Add method for A1Range to check if an A1 is in one of its corners, typically a suitable place for an anchor cell
+
 ## 1.0.9
 
 - Fix edge case in a A1Range where the FROM has a greater column than the TO
