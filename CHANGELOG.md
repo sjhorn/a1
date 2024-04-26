@@ -1,3 +1,8 @@
+## 1.0.11
+
+- Add hasRow/Column method for A1Range to help with showing selection in a spreadsheet UI
+- Fixed bug that didn't allow parsing A1Range A:C (cols)
+
 ## 1.0.10
 
 - Add method for A1Range to check if an A1 is in one of its corners, typically a suitable place for an anchor cell

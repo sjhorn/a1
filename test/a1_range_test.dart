@@ -92,6 +92,22 @@ void main() {
       expect(result?.to.column, isNull);
       expect(result?.to.row, isNull);
     });
+    test('hasColumn for variages ranges', () {
+      expect('A1:A2'.a1Range.hasColumn(0), isTrue);
+      expect('A1:A2'.a1Range.hasColumn(1), isFalse);
+      expect('A1:A'.a1Range.hasColumn(0), isTrue);
+      expect('A1:2'.a1Range.hasColumn(0), isFalse);
+      expect('A:B2'.a1Range.hasColumn(0), isTrue);
+      expect('1:2'.a1Range.hasColumn(0), isTrue);
+    });
+    test('hasRow for variages ranges', () {
+      expect('A1:A2'.a1Range.hasRow(0), isTrue);
+      expect('A1:B1'.a1Range.hasRow(1), isFalse);
+      expect('A1:A'.a1Range.hasRow(0), isFalse);
+      expect('A1:2'.a1Range.hasRow(0), isTrue);
+      expect('2:B2'.a1Range.hasRow(1), isTrue);
+      expect('A:B'.a1Range.hasRow(0), isTrue);
+    });
   });
 
   group('A1Range has the correct partial rows and columns', () {

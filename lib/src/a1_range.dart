@@ -203,6 +203,71 @@ class A1Range implements Comparable<A1Range> {
 
     return false;
   }
+
+  /// is the row in this range
+  bool hasRow(int row) => switch ((from.a1, to.a1)) {
+        // A1:A10
+        (A1(row: var fromRow), A1(row: var toRow))
+            when row >= fromRow && row <= toRow =>
+          true,
+
+        // :A1
+        (_, A1(row: var toRow)) when from.isAll && row <= toRow => true,
+
+        // A:B2
+        (null, A1(row: var toRow))
+            when from.row != null && row >= from.row! && row <= toRow =>
+          true,
+
+        // A1:
+        (A1(row: var fromRow), _) when row >= fromRow && to.isAll => true,
+
+        // A1:1
+        (A1(row: var fromRow), null)
+            when row >= fromRow && to.row != null && row <= to.row! =>
+          true,
+
+        // A:B
+        (null, null) => true,
+        (_, _) when from.isAll && to.isAll => true,
+        _ => false,
+      };
+
+  /// is the column in this range
+  bool hasColumn(int column) => switch ((from.a1, to.a1)) {
+        // A1:A10
+        (A1(column: var fromColumn), A1(column: var toColumn))
+            when column >= fromColumn && column <= toColumn =>
+          true,
+
+        // :B2
+        (_, A1(column: var toColumn)) when from.isAll && column <= toColumn =>
+          true,
+
+        // 2:B2
+        (null, A1(column: var toColumn))
+            when from.column != null &&
+                column >= from.column! &&
+                column <= toColumn =>
+          true,
+
+        // A1:
+        (A1(column: var fromColumn), _) when column >= fromColumn && to.isAll =>
+          true,
+
+        // A1:A
+        (A1(column: var fromColumn), null)
+            when column >= fromColumn &&
+                to.column != null &&
+                column <= to.column! =>
+          true,
+        // 1:2
+        (null, null) => true,
+
+        // <empty>
+        (_, _) when from.isAll && to.isAll => true,
+        _ => false,
+      };
 }
 
 /// This extension allows an [A1Range] to be create from a [String]

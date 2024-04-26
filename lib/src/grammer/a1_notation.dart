@@ -174,6 +174,7 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
         ref0(rows),
         ref0(columnsTo),
         ref0(columnsFrom),
+        ref0(cols),
         ref0(a1),
         ref0(column),
         ref0(row),
@@ -234,7 +235,7 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
                 #column2: column2[#column]!,
               });
 
-  // A:C refers to all the cells of the first column up to row 5
+  // A:C refers to all the cells of the first column up to column C
   Parser<SymbolMap> cols() => seq3(ref0(column), ref0(separator), ref0(column))
       .map3((column1, separator, column2) => {
             #column1: column1[#column]!,
