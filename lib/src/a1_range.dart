@@ -248,7 +248,15 @@ class A1Range implements Comparable<A1Range> {
           true,
 
         // A:B
-        (null, null) => true,
+        (null, null) when from.row == null && to.row == null => true,
+
+        // 1:1
+        (null, null)
+            when from.row != null &&
+                row >= from.row! &&
+                to.row != null &&
+                row <= to.row! =>
+          true,
         (_, _) when from.isAll && to.isAll => true,
         _ => false,
       };
@@ -281,8 +289,17 @@ class A1Range implements Comparable<A1Range> {
                 to.column != null &&
                 column <= to.column! =>
           true,
+
         // 1:2
-        (null, null) => true,
+        (null, null) when from.column == null && to.column == null => true,
+
+        // A:A
+        (null, null)
+            when from.column != null &&
+                column >= from.column! &&
+                to.column != null &&
+                column <= to.column! =>
+          true,
 
         // <empty>
         (_, _) when from.isAll && to.isAll => true,

@@ -60,8 +60,10 @@ void main() {
 
       expect('A:B'.a1Range.hasCorner('A1'.a1), isTrue);
       expect('A:A'.a1Range.hasCorner('A1'.a1), isTrue);
+      expect('A'.a1Range.hasCorner('A1'.a1), isTrue);
       expect('1:2'.a1Range.hasCorner('A2'.a1), isTrue);
-      expect('1:2'.a1Range.hasCorner('A2'.a1), isTrue);
+      expect('2'.a1Range.hasCorner('A2'.a1), isTrue);
+      expect('I'.a1Range.hasCorner('I1'.a1), isTrue);
     });
     test(
         'where the to column is greater than the from column, but row is greater',
@@ -104,6 +106,7 @@ void main() {
       expect('A1:2'.a1Range.hasColumn(0), isFalse);
       expect('A:B2'.a1Range.hasColumn(0), isTrue);
       expect('1:2'.a1Range.hasColumn(0), isTrue);
+      expect('A:A'.a1Range.hasColumn(1), isFalse);
     });
     test('hasRow for variages ranges', () {
       expect('A1:A2'.a1Range.hasRow(0), isTrue);
@@ -112,6 +115,7 @@ void main() {
       expect('A1:2'.a1Range.hasRow(0), isTrue);
       expect('2:B2'.a1Range.hasRow(1), isTrue);
       expect('A:B'.a1Range.hasRow(0), isTrue);
+      expect('1:1'.a1Range.hasRow(1), isFalse);
     });
   });
 

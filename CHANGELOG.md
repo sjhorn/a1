@@ -1,3 +1,7 @@
+## 1.0.13
+
+- Bug fix for hasRow, hasColumn for whole columns/rows ie. A:A, 1:1 cases
+
 ## 1.0.12
 
 - Fixeg bug in hasCorner or the A:A, 2:2 cases ie. whole row or column selection
