@@ -201,6 +201,26 @@ class A1Range implements Comparable<A1Range> {
       return true;
     }
 
+    // From column eg A:
+    if (from.a1 == null && a1.row == 0 && a1.column == from.column) {
+      return true;
+    }
+
+    // From row 1:
+    if (from.a1 == null && a1.column == 0 && a1.row == from.row) {
+      return true;
+    }
+
+    // To column :A
+    if (to.a1 == null && a1.row == 0 && a1.column == to.column) {
+      return true;
+    }
+
+    // To row :1
+    if (to.a1 == null && a1.column == 0 && a1.row == to.row) {
+      return true;
+    }
+
     return false;
   }
 

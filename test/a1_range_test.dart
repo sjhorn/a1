@@ -57,6 +57,11 @@ void main() {
       expect(a1r.hasCorner('C2'.a1), isTrue);
       expect(a1r.hasCorner('A5'.a1), isTrue);
       expect(a1r.hasCorner('C5'.a1), isTrue);
+
+      expect('A:B'.a1Range.hasCorner('A1'.a1), isTrue);
+      expect('A:A'.a1Range.hasCorner('A1'.a1), isTrue);
+      expect('1:2'.a1Range.hasCorner('A2'.a1), isTrue);
+      expect('1:2'.a1Range.hasCorner('A2'.a1), isTrue);
     });
     test(
         'where the to column is greater than the from column, but row is greater',
