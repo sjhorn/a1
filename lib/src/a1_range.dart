@@ -13,6 +13,9 @@ import 'package:a1/a1.dart';
 import 'package:a1/src/grammer/a1_notation.dart';
 
 class A1Range implements Comparable<A1Range> {
+  /// All range
+  static final A1Range all =
+      A1Range._(A1Partial.all, A1Partial.all, anchor: 'A1'.a1);
   static final A1Notation _a1n = A1Notation();
   static final _parser = _a1n.buildFrom(_a1n.range()).end();
 
@@ -190,6 +193,10 @@ class A1Range implements Comparable<A1Range> {
 
   /// Does this [A1Range] have this [A1] at one of its corners.
   bool hasCorner(A1 a1) {
+    if (this == all && a1 == 'a1'.a1) {
+      return true;
+    }
+
     if (from.a1 == a1 || to.a1 == a1) {
       return true;
     }

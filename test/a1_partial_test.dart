@@ -62,5 +62,17 @@ void main() {
       expect(a1p3.hashCode, equals(A1Partial(null, 1).hashCode));
       expect(a1p4.hashCode, equals(A1Partial(null, null).hashCode));
     });
+    test('whole row, column or either', () {
+      expect(A1Partial('A', null).isWholeColumn, isTrue);
+      expect(A1Partial('A', null).isWholeRow, isFalse);
+      expect(A1Partial('A', null).isWholeRowOrColumn, isTrue);
+      expect(A1Partial(null, 1).isWholeColumn, isFalse);
+      expect(A1Partial(null, 1).isWholeRow, isTrue);
+      expect(A1Partial(null, 1).isWholeRowOrColumn, isTrue);
+    });
+
+    test('all singleton', () {
+      expect(A1Partial.all, equals(A1Partial(null, null)));
+    });
   });
 }

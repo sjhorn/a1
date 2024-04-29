@@ -1,6 +1,8 @@
 ## 1.0.13
 
 - Bug fix for hasRow, hasColumn for whole columns/rows ie. A:A, 1:1 cases
+- Add features to check if a partial represents a whole row or column or either
+- Add A1Range.all and A1Partial.all to support these single use-cases
 
 ## 1.0.12
 

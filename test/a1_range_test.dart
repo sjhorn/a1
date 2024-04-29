@@ -3,6 +3,13 @@ import 'package:test/test.dart';
 
 void main() {
   group('Creating an A1Range', () {
+    test('from singleton all', () {
+      expect(A1Range.all.from.column, isNull);
+      expect(A1Range.all.from.row, isNull);
+      expect(A1Range.all.to.column, isNull);
+      expect(A1Range.all.to.row, isNull);
+      expect(A1Range.all.anchor, equals('a1'.a1));
+    });
     test('by parsing a string with full a1s', () {
       final a1r = A1Range.parse('A1:B2');
       expect(a1r, isA<A1Range>());
@@ -57,6 +64,7 @@ void main() {
       expect(a1r.hasCorner('C2'.a1), isTrue);
       expect(a1r.hasCorner('A5'.a1), isTrue);
       expect(a1r.hasCorner('C5'.a1), isTrue);
+      expect(A1Range.all.hasCorner('a1'.a1), isTrue);
 
       expect('A:B'.a1Range.hasCorner('A1'.a1), isTrue);
       expect('A:A'.a1Range.hasCorner('A1'.a1), isTrue);

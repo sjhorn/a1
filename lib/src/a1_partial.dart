@@ -5,6 +5,9 @@
 import 'package:a1/a1.dart';
 
 class A1Partial implements Comparable {
+  /// Empty/all [A1Partial]
+  static A1Partial all = A1Partial(null, null);
+
   /// letters of the A1 or null for all columns
   final String? letters;
 
@@ -163,4 +166,13 @@ class A1Partial implements Comparable {
 
   /// if both letters and digits are null this selects all
   bool get isAll => letters == null && digits == null;
+
+  /// if this partial represents a whole column ie. no row specified
+  bool get isWholeColumn => row == null && column != null;
+
+  /// if this partial represents a whole row ie. no column specified
+  bool get isWholeRow => column == null && row != null;
+
+  /// if this partial represents either a whole row or column
+  bool get isWholeRowOrColumn => isWholeColumn || isWholeRow;
 }
