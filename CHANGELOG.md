@@ -1,3 +1,7 @@
+## 1.0.14
+
+- Fix range [A1Range] comparison to compare whole single/multi-column, single/multi-whole row, whole sheet
+
 ## 1.0.13
 
 - Bug fix for hasRow, hasColumn for whole columns/rows ie. A:A, 1:1 cases

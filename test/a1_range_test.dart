@@ -192,6 +192,30 @@ void main() {
       expect('A'.a1Range.contains('a2'.a1), isTrue);
       expect('B'.a1Range.contains('a2'.a1), isFalse);
     });
+
+    test('sorting', () {
+      final list = [
+        'A1:B2'.a1Range,
+        'A1:C3'.a1Range,
+        'A:B'.a1Range,
+        '1:2'.a1Range,
+        'A:C'.a1Range
+      ];
+      list.sort();
+      expect(
+          list,
+          containsAllInOrder([
+            'A1:B2'.a1Range,
+            'A1:C3'.a1Range,
+            'A:B'.a1Range,
+            '1:2'.a1Range,
+            'A:C'.a1Range,
+          ]));
+
+      final partial = A1Range.fromPartials(A1Partial('A', null), A1Partial.all);
+      expect(
+          () => partial.compareTo(partial), throwsA(isA<UnsupportedError>()));
+    });
   });
 
   group('Operators', () {

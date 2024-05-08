@@ -128,8 +128,24 @@ class A1Range implements Comparable<A1Range> {
           A1(self: var to2),
         ) =>
           from1.area(to1).compareTo(from2.area(to2)),
+        (null, null, A1(), A1()) => 1,
+        (A1(), A1(), null, null) => -1,
+        (null, null, null, null) =>
+          _relativeArea.compareTo(other._relativeArea),
         _ => throw UnsupportedError(
-            'The area of the two ranges is not comparable'),
+            'The area of the two ranges $from:$to is not comparable'),
+      };
+
+  int get _relativeArea => switch ((from.column, from.row, to.column, to.row)) {
+        // whole columns
+        // A:C
+        (int(), null, int(), null) => to.column! - from.column!,
+
+        // whole rows
+        // 1:3
+        (null, int(), null, int()) => to.row! - from.row!,
+        _ => throw UnsupportedError(
+            'The area of the two ranges $from:$to is not comparable'),
       };
 
   /// Test whether this A1 is equal to `other`.
