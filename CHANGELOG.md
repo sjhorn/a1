@@ -1,6 +1,10 @@
-## 1.0.14
+## 1.1.00
 
+- Add features for A1Range to selection single border for left,top,right,bottom of range
 - Fix range [A1Range] comparison to compare whole single/multi-column, single/multi-whole row, whole sheet
+- Bug fix [A1Range] hashCode for range A1:A1, as this would return zero (0) for single value ranges like A1:A1, B2:B2
+- Add intersect, subtract and overlayRanges to assist with formatting ranges in a worksheet
+- Worthy of a minor version bump to 1.1.0
 
 ## 1.0.13
 

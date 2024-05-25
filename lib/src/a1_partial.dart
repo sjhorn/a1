@@ -158,7 +158,7 @@ class A1Partial implements Comparable {
   }
 
   @override
-  int get hashCode => letters.hashCode ^ digits.hashCode;
+  int get hashCode => '$letters$digits'.hashCode;
 
   /// Show the A1Partial with null left as a blank string
   @override
