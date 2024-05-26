@@ -61,70 +61,11 @@ class A1Partial implements Comparable {
   /// this is important for creation of a range to order the left and right
   /// side of the : or ...
   ///
-  ///
   @override
   int compareTo(other) {
-    return switch ((other, letters, digits)) {
-      // other is B1  vs. A,B,C
-      (A1(column: var column1), String(), null) when column1 > column! => -1,
-      (A1(column: var column1), String(), null) when column1 == column! => 0,
-      (A1(column: var column1), String(), null) when column1 < column! => 1,
-
-      // other is B2 vs 1,2,3
-      (A1(row: var row1), null, int()) when row1 > row! => -1,
-      (A1(row: var row1), null, int()) when row1 == row! => 0,
-      (A1(row: var row1), null, int()) when row1 < row! => 1,
-
-      // A1 and we are an A1 too, so just use A1
-      (A1(), String(), int()) => a1!.compareTo(other),
-
-      // other is a A1Partial
-      (A1Partial(), _, _) => _comparePartials(other),
-
-      // Comparing to an unknown object
-      _ => throw UnimplementedError('Comparing [$other] v [$this]'),
-    };
-  }
-
-  // compare when other side is a partial
-  int _comparePartials(A1Partial other) {
-    return switch ((other.a1, other.column, other.row, a1, column, row)) {
-      // both are a1s
-      (A1(self: var otherA1), _, _, A1(self: var selfA1), _, _) =>
-        selfA1.compareTo(otherA1),
-
-      // if other is an a1 feed back into compareTo
-      (A1(self: var otherA1), _, _, null, _, _) => compareTo(otherA1),
-
-      // if we are an a1 and other is not
-      (null, _, _, A1(self: var selfA1), _, _) => -1 * other.compareTo(selfA1),
-
-      // we are noth partials, so we need to try and compare
-      // B vs A,B,C
-      (null, int(), null, null, int(), null) =>
-        column!.compareTo(other.column!),
-
-      // 2 vs 1,2,3
-      (null, null, int(), null, null, int()) => row!.compareTo(other.row!),
-
-      // A vs 1,2,3 treat any columns as larger
-      (null, int(), null, null, null, int()) => other.column!.compareTo(row!),
-      // 1 vs A,B,C treat any columns as larger
-      (null, null, int(), null, int(), null) => -1,
-
-      // 123 vs null single row range
-      (null, null, int(), null, null, null) => 1,
-
-      // null vs 123 single row range
-      (null, null, null, null, null, int()) => -1,
-
-      // A vs null single column range
-      (null, int(), null, null, null, null) => 1,
-
-      // null vs A single column range
-      (null, null, null, null, int(), null) => -1,
-      _ => throw UnimplementedError(),
-    };
+    final thisA1 = A1.fromVector(column ?? 0, row ?? 0);
+    final otherA1 = A1.fromVector(other.column ?? 0, other.row ?? 0);
+    return thisA1.compareTo(otherA1);
   }
 
   /// Return the column as a zero based [int] or null

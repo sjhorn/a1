@@ -8,6 +8,7 @@ void main() {
       expect(a1, isA<A1>());
       expect(a1.column, equals(18252));
       expect(a1.row, equals(122));
+      expect(a1.self, equals(a1));
     });
 
     test('throws when parsing an invalid string', () {
@@ -70,7 +71,7 @@ void main() {
     test('> and >=', () {
       expect('Z26'.a1 > 'C1'.a1, isTrue);
       expect('Z26'.a1 >= 'Z1'.a1, isTrue);
-      expect('D21'.a1 > 'Z1'.a1, isTrue);
+      expect('D21'.a1 > 'Z1'.a1, isFalse);
     });
   });
   group('Move to adjacent cells', () {
@@ -115,7 +116,7 @@ void main() {
 
       expect('z1'.a1.compareTo('a1'.a1), equals(1));
       expect('b1'.a1.compareTo('a1'.a1), equals(1));
-      expect('a2'.a1.compareTo('b1'.a1), equals(1));
+      expect('a2'.a1.compareTo('b1'.a1), equals(-1));
 
       expect('A1'.a1.compareTo('a1'.a1), equals(0));
       expect('a1'.a1.compareTo('a2'.a1.up), equals(0));

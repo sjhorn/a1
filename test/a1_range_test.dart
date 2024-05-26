@@ -107,23 +107,47 @@ void main() {
       expect(result?.to.column, isNull);
       expect(result?.to.row, isNull);
     });
-    test('hasColumn for variages ranges', () {
+    test('hasColumn for various ranges', () {
       expect('A1:A2'.a1Range.hasColumn(0), isTrue);
-      expect('A1:A2'.a1Range.hasColumn(1), isFalse);
+      expect('A1:B2'.a1Range.hasColumn(1), isTrue);
+      expect('A1:B2'.a1Range.hasColumn(2), isFalse);
       expect('A1:A'.a1Range.hasColumn(0), isTrue);
-      expect('A1:2'.a1Range.hasColumn(0), isFalse);
+      expect('A1:2'.a1Range.hasColumn(0), isTrue);
       expect('A:B2'.a1Range.hasColumn(0), isTrue);
       expect('1:2'.a1Range.hasColumn(0), isTrue);
       expect('A:A'.a1Range.hasColumn(1), isFalse);
     });
-    test('hasRow for variages ranges', () {
+    test('hasRow for various ranges', () {
       expect('A1:A2'.a1Range.hasRow(0), isTrue);
       expect('A1:B1'.a1Range.hasRow(1), isFalse);
-      expect('A1:A'.a1Range.hasRow(0), isFalse);
+      expect('A1:A'.a1Range.hasRow(0), isTrue);
       expect('A1:2'.a1Range.hasRow(0), isTrue);
       expect('2:B2'.a1Range.hasRow(1), isTrue);
       expect('A:B'.a1Range.hasRow(0), isTrue);
       expect('1:1'.a1Range.hasRow(1), isFalse);
+    });
+    test('left, top, right, bottom', () {
+      int maxInt = -1 >>> 1;
+      expect('A1:A2'.a1Range.left, equals(0));
+      expect('A1:A2'.a1Range.left, equals(0));
+      expect('A:A2'.a1Range.top, equals(0));
+      expect('1:A2'.a1Range.top, equals(0));
+      expect('A1:Z2'.a1Range.right, equals(25));
+      expect('A1:2'.a1Range.right, equals(maxInt));
+      expect('A1:A255'.a1Range.bottom, equals(254));
+      expect('A1:A'.a1Range.bottom, equals(maxInt));
+    });
+    test('columnSpan and rowSpan', () {
+      int maxInt = -1 >>> 1;
+      expect('A1:A1'.a1Range.columnSpan, equals(1));
+      expect('A1:B2'.a1Range.columnSpan, equals(2));
+      expect('1:A2'.a1Range.columnSpan, equals(1));
+      expect('A1:2'.a1Range.columnSpan, equals(maxInt));
+
+      expect('A1:A1'.a1Range.rowSpan, equals(1));
+      expect('A1:B2'.a1Range.rowSpan, equals(2));
+      expect('A:A1'.a1Range.rowSpan, equals(1));
+      expect('A1:B'.a1Range.rowSpan, equals(maxInt));
     });
     test('leftBorder for various ranges', () {
       expect('A1:A2'.a1Range.leftBorder, equals('A1:A2'.a1Range));
@@ -519,8 +543,8 @@ void main() {
     final toPartial2 = A1Range.parse('A1:B');
 
     test('valid from letters', () {
-      expect(fromPartial1.to.letters, equals('AAA'));
-      expect(fromPartial1.to.digits, isNull);
+      expect(fromPartial1.from.letters, equals('B'));
+      expect(fromPartial1.to.digits, equals(2));
       expect(fromPartial2.from.letters, isNull);
       expect(fromPartial2.from.digits, equals(1));
       expect(fromPartial2.anchor, isNull);

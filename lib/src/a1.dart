@@ -161,15 +161,10 @@ class A1 implements Comparable<A1> {
   /// ```
   @override
   int compareTo(A1 other) {
-    return row < other.row
-        ? -1
-        : row > other.row
-            ? 1
-            : column < other.column
-                ? -1
-                : column > other.column
-                    ? 1
-                    : 0;
+    int rowCompare = row.compareTo(other.row);
+    int columnCompare = column.compareTo(other.column);
+    return columnCompare != 0 ? columnCompare : rowCompare;
+    //return rowCompare != 0 ? rowCompare : column.compareTo(other.column);
   }
 
   /// Sum operator for two [A1]s

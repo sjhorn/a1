@@ -16,44 +16,44 @@ void main() {
     test('compare A1 with A1,A,1,null', () {
       expect(a1p1.compareTo(a1p1), equals(0));
       expect(a1p1.compareTo(a1p2), equals(0));
-      expect(a1p1.compareTo(a1p3), equals(0));
-      expect(() => a1p1.compareTo(a1p4), throwsA(isA<UnimplementedError>()));
+      expect(a1p1.compareTo(a1p3), equals(1));
+      expect(a1p1.compareTo(a1p4), equals(1));
     });
     test('compare A with A1,A,1,null', () {
       expect(a1p2.compareTo(a1p1), equals(0));
       expect(a1p2.compareTo(a1p2), equals(0));
-      expect(a1p2.compareTo(a1p3), equals(-1));
-      expect(() => a1p1.compareTo(a1p4), throwsA(isA<UnimplementedError>()));
+      expect(a1p2.compareTo(a1p3), equals(1));
+      expect(a1p1.compareTo(a1p4), equals(1));
     });
     test('compare 1 with A1,A,1,null', () {
-      expect(a1p3.compareTo(a1p1), equals(0));
-      expect(a1p3.compareTo(a1p2), equals(1));
+      expect(a1p3.compareTo(a1p1), equals(-1));
+      expect(a1p3.compareTo(a1p2), equals(-1));
       expect(a1p3.compareTo(a1p3), equals(0));
-      expect(a1p3.compareTo(a1p4), equals(-1));
+      expect(a1p3.compareTo(a1p4), equals(0));
     });
     test('compare null with A1,A,1,null', () {
-      expect(() => a1p4.compareTo(a1p1), throwsA(isA<UnimplementedError>()));
-      expect(a1p4.compareTo(a1p2), equals(1));
-      expect(a1p4.compareTo(a1p3), equals(1));
-      expect(() => a1p4.compareTo(a1p4), throwsA(isA<UnimplementedError>()));
+      expect(a1p4.compareTo(a1p1), equals(-1));
+      expect(a1p4.compareTo(a1p2), equals(-1));
+      expect(a1p4.compareTo(a1p3), equals(0));
+      expect(a1p4.compareTo(a1p4), equals(0));
     });
 
     test('<', () {
-      expect(a1p2 < a1p3, isTrue);
+      expect(a1p2 < a1p3, isFalse);
     });
     test('<=', () {
       expect(a1p1 <= a1p1, isTrue);
-      expect(a1p2 <= a1p3, isTrue);
-      expect(a1p3 <= a1p2, isFalse);
+      expect(a1p2 <= a1p3, isFalse);
+      expect(a1p3 <= a1p2, isTrue);
     });
     test('>', () {
-      expect(a1p2 > a1p3, isFalse);
-      expect(a1p3 > a1p2, isTrue);
+      expect(a1p2 > a1p3, isTrue);
+      expect(a1p3 > a1p2, isFalse);
     });
 
     test('>=', () {
       expect(a1p1 >= a1p1, isTrue);
-      expect(a1p3 >= a1p2, isTrue);
+      expect(a1p3 >= a1p2, isFalse);
     });
 
     test('hashcode', () {
