@@ -145,7 +145,7 @@ void main() {
       expect('A1:2'.a1Range.columnSpan, equals(maxInt));
 
       expect('A1:A1'.a1Range.rowSpan, equals(1));
-      expect('A1:B2'.a1Range.rowSpan, equals(2));
+      expect('A1:B3'.a1Range.rowSpan, equals(3));
       expect('A:A1'.a1Range.rowSpan, equals(1));
       expect('A1:B'.a1Range.rowSpan, equals(maxInt));
     });
@@ -205,31 +205,31 @@ void main() {
     });
 
     test('overlaps for various ranges', () {
-      // // ranges without whole columns
-      // expect('A1:B2'.a1Range.overlaps('B2:E4'.a1Range), isTrue);
-      // expect('A1:B2'.a1Range.overlaps('C2:D3'.a1Range), isFalse);
+      // ranges without whole columns
+      expect('A1:B2'.a1Range.overlaps('B2:E4'.a1Range), isTrue);
+      expect('A1:B2'.a1Range.overlaps('C2:D3'.a1Range), isFalse);
 
-      // expect('A4:B5'.a1Range.overlaps('B2:E4'.a1Range), isTrue);
-      // expect('E1:G2'.a1Range.overlaps('B2:E4'.a1Range), isTrue);
-      // expect('E4:G5'.a1Range.overlaps('B2:E4'.a1Range), isTrue);
+      expect('A4:B5'.a1Range.overlaps('B2:E4'.a1Range), isTrue);
+      expect('E1:G2'.a1Range.overlaps('B2:E4'.a1Range), isTrue);
+      expect('E4:G5'.a1Range.overlaps('B2:E4'.a1Range), isTrue);
 
-      // // whole column in one
-      // expect('A:E'.a1Range.overlaps('E2:G4'.a1Range), isTrue);
-      // expect('A:E'.a1Range.overlaps('E:F'.a1Range), isTrue);
-      // expect('A:E'.a1Range.overlaps('G:I'.a1Range), isFalse);
+      // whole column in one
+      expect('A:E'.a1Range.overlaps('E2:G4'.a1Range), isTrue);
+      expect('A:E'.a1Range.overlaps('E:F'.a1Range), isTrue);
+      expect('A:E'.a1Range.overlaps('G:I'.a1Range), isFalse);
 
-      // expect('E2:G4'.a1Range.overlaps('A:E'.a1Range), isTrue);
-      // expect('E:F'.a1Range.overlaps('A:E'.a1Range), isTrue);
-      // expect('G:I'.a1Range.overlaps('A:E'.a1Range), isFalse);
+      expect('E2:G4'.a1Range.overlaps('A:E'.a1Range), isTrue);
+      expect('E:F'.a1Range.overlaps('A:E'.a1Range), isTrue);
+      expect('G:I'.a1Range.overlaps('A:E'.a1Range), isFalse);
 
-      // // whole row in one
-      // expect('3:7'.a1Range.overlaps('C6:D13'.a1Range), isTrue);
-      // expect('3:7'.a1Range.overlaps('5:9'.a1Range), isTrue);
-      // expect('1:2'.a1Range.overlaps('3:4'.a1Range), isFalse);
+      // whole row in one
+      expect('3:7'.a1Range.overlaps('C6:D13'.a1Range), isTrue);
+      expect('3:7'.a1Range.overlaps('5:9'.a1Range), isTrue);
+      expect('1:2'.a1Range.overlaps('3:4'.a1Range), isFalse);
 
-      // expect('C6:D13'.a1Range.overlaps('3:7'.a1Range), isTrue);
-      // expect('5:9'.a1Range.overlaps('3:7'.a1Range), isTrue);
-      // expect('3:4'.a1Range.overlaps('1:2'.a1Range), isFalse);
+      expect('C6:D13'.a1Range.overlaps('3:7'.a1Range), isTrue);
+      expect('5:9'.a1Range.overlaps('3:7'.a1Range), isTrue);
+      expect('3:4'.a1Range.overlaps('1:2'.a1Range), isFalse);
 
       // all from a starting cell
       expect('D1'.a1Range.overlaps('E1:E1'.a1Range), isTrue);
@@ -576,6 +576,7 @@ void main() {
       expect('A1:B2'.a1Range.area, equals(4));
     });
     test('contains', () {
+      expect('C30:D31'.a1Range.contains('C30'.a1), isTrue);
       expect('A1:a6'.a1Range.contains('a2'.a1), isTrue);
       expect('A1:a6'.a1Range.contains('b2'.a1), isFalse);
       expect('A1:a1'.a1Range.contains('a2'.a1), isFalse);
@@ -620,30 +621,30 @@ void main() {
           list,
           containsAllInOrder([
             'A1:B2'.a1Range,
-            'A1:C3'.a1Range,
-            'A:B'.a1Range,
             '1:2'.a1Range,
-            'A:C'.a1Range,
+            'A1:C3'.a1Range,
             A1Range.all,
+            'A:B'.a1Range,
+            'A:C'.a1Range,
           ]));
     });
   });
 
   group('Operators', () {
     test('comparison', () {
-      expect('a1:b2'.a1Range.compareTo('a1:a2'.a1Range), equals(1));
-      expect('b1:b2'.a1Range.compareTo('a1:a2'.a1Range), equals(0));
+      expect('a1:b2'.a1Range.compareTo('a1:a2'.a1Range), equals(0));
+      expect('b1:b2'.a1Range.compareTo('a1:a2'.a1Range), equals(1));
 
-      expect('b2:a1'.a1Range.compareTo('a1:a2'.a1Range), equals(1));
+      expect('b3:a1'.a1Range.compareTo('a1:a2'.a1Range), equals(1));
 
-      expect('a1:a'.a1Range.compareTo('b1:c3'.a1Range), equals(1));
+      expect('a1:a'.a1Range.compareTo('b1:c3'.a1Range), equals(-1));
 
       expect(A1Range.all.compareTo('a1:b2'.a1Range), equals(1));
-      expect(A1Range.all.compareTo('a:b'.a1Range), equals(1));
+      expect(A1Range.all.compareTo('a:b'.a1Range), equals(0));
       expect(A1Range.all.compareTo('1:2'.a1Range), equals(1));
 
-      expect('b2:a1'.a1Range.compareTo('a1:a2'.a1Range), equals(1));
-      expect('a1:a2'.a1Range.compareTo('b2:a1'.a1Range), equals(-1));
+      expect('b2:a1'.a1Range.compareTo('a1:a2'.a1Range), equals(0));
+      expect('a1:a2'.a1Range.compareTo('b2:a1'.a1Range), equals(0));
 
       final partial = A1Range.fromPartials(A1Partial('B', null), A1Partial.all);
       expect(partial.compareTo(partial), equals(0));

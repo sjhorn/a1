@@ -24,6 +24,8 @@ void main() {
       expect(vector1 * vector1, equals(A1Area(magnitude: 4)));
       expect(vector3 * vector1,
           equals(A1Area(twoInfinite: true, oneInfinite: true, magnitude: 2)));
+      expect(vector1 * vector3,
+          equals(A1Area(twoInfinite: true, oneInfinite: true, magnitude: 2)));
 
       expect(vector4 * vector1,
           equals(A1Area(magnitude: 2, oneInfinite: true, twoInfinite: true)));

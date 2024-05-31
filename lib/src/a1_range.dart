@@ -117,8 +117,9 @@ class A1Range implements Comparable<A1Range> {
   /// Returns a negative number if this is less than other, zero if they are
   /// equal, and a positive number if this is greater than other.
   @override
-  int compareTo(A1Range other) =>
-      A1Area.fromA1Range(this).compareTo(A1Area.fromA1Range(other));
+  int compareTo(A1Range other) => A1
+      .fromVector(left, bottom)
+      .compareTo(A1.fromVector(other.left, other.bottom));
 
   /// Test whether this A1 is equal to `other`.
   @override
@@ -373,7 +374,7 @@ class A1Range implements Comparable<A1Range> {
   int get left => (from.column ?? 0);
 
   /// the from.row or 0
-  int get top => (from.column ?? 0);
+  int get top => (from.row ?? 0);
 
   /// the to.column or maximum integer for the system
   int get right => (to.column ?? _maxInt);

@@ -163,7 +163,7 @@ class A1Reference implements Comparable<A1Reference> {
     if (other.uri == uri && worksheet == other.worksheet) {
       return range.compareTo(other.range);
     }
-    throw UnsupportedError('The area of the two references is not comparable');
+    throw UnsupportedError('The two references are not comparable');
   }
 
   /// Print an a1 reference in the expected format

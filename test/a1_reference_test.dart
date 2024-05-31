@@ -132,7 +132,7 @@ void main() {
   group('Operators', () {
     test('comparison', () {
       expect('worksheet!a1:b2'.a1Ref.compareTo('worksheet!a1:a2'.a1Ref),
-          equals(1));
+          equals(0));
       expect(
           "'worksheet 2'!b1:b2"
               .a1Reference
@@ -140,7 +140,7 @@ void main() {
           equals(0));
 
       expect(
-          "'[filename]worksheet'!b2:a1"
+          "'[filename]worksheet'!b3:a1"
               .a1Ref
               .compareTo("'[filename]worksheet'!a1:a2".a1Ref),
           equals(1));
