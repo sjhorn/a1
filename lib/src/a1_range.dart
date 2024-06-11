@@ -519,22 +519,22 @@ class A1Range implements Comparable<A1Range> {
   int get height => (to.row ?? _maxInt) - (from.row ?? 0);
 
   /// adjust range left relative to anchor
-  A1Range get goLeft => (anchor?.column ?? 0) == right
-      ? copyWith(from: from.left)
-      : copyWith(to: to.left);
+  A1Range get goLeft => (anchor?.column ?? 0) != right
+      ? copyWith(to: to.left)
+      : copyWith(from: from.left);
 
   /// adjust range right relative to anchor
-  A1Range get goRight => (anchor?.column ?? 0) == right
+  A1Range get goRight => (anchor?.column ?? 0) != left
       ? copyWith(from: from.right)
       : copyWith(to: to.right);
 
   /// adjust range up relative to anchor
-  A1Range get goUp => (anchor?.row ?? 0) == bottom
-      ? copyWith(from: from.up)
-      : copyWith(to: to.up);
+  A1Range get goUp => (anchor?.row ?? 0) != bottom
+      ? copyWith(to: to.up)
+      : copyWith(from: from.up);
 
   /// adjust range down relative to anchor
-  A1Range get goDown => (anchor?.row ?? 0) == bottom
+  A1Range get goDown => (anchor?.row ?? 0) != top
       ? copyWith(from: from.down)
       : copyWith(to: to.down);
 }

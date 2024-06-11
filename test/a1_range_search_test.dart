@@ -204,6 +204,10 @@ void main() {
     a1b['D21:E21'.a1Range] = true;
     a1b['E19:H19'.a1Range] = true;
 
+    a1b['C5:D5'.a1Range] = true;
+    a1b['E5:F5'.a1Range] = true;
+    a1b['D6:E6'.a1Range] = true;
+
     a1b['C26:C27'.a1Range] = true;
     a1b['D25:D26'.a1Range] = true;
     a1b['D27:D28'.a1Range] = true;
@@ -229,7 +233,12 @@ void main() {
       expect(a1b.cellRight('H21:D19'.a1Range), equals('D19:I21'.a1Range));
     });
 
-    test(' right with a cascade of merges', () {
+    test(' right with a cascade of column merges', () {
+      final newRange = a1b.cellRight('B5:G6'.a1Range.copyWith(anchor: 'C6'.a1));
+      expect(newRange, equals('C5:G6'.a1Range));
+    });
+
+    test(' right with a cascade of row merges', () {
       final newRange = a1b.cellRight('C25:C25'.a1Range);
       expect(newRange, equals('C25:D28'.a1Range));
     });
