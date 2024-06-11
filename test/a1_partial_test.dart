@@ -74,5 +74,22 @@ void main() {
     test('all singleton', () {
       expect(A1Partial.all, equals(A1Partial(null, null)));
     });
+    test('min/max', () {
+      final list = [
+        A1Partial('A', 1),
+        A1Partial('B', 2),
+        null,
+        A1Partial('C', 3),
+        null
+      ];
+      expect(
+        A1Partial.min(list),
+        equals(A1Partial('A', 1)),
+      );
+      expect(
+        A1Partial.max(list),
+        equals(A1Partial('C', 3)),
+      );
+    });
   });
 }

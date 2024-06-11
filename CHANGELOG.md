@@ -1,6 +1,6 @@
 ## 2.0.0
 - Breaking changes on comparison of [A1], to provide deterministic binary searches
-- Addition of [A1RangeBinarySearch] that features a binary search across mutliple [A1Range]s for a match
+- Addition of [A1RangeSearch] that features a binary, quadtree searches and merge movements across mutliple [A1Range]s for a match
 - Simplified [A1Range], [A1] and [A1Partial] to use rectangle-like logic, even for unbounded ranges
 - Adding left,top,right,bottom as well as columnSpan and rowSpan to [A1Range]
 - Refactored numerous tests to match the new more deterministic logic for comparisons, column/row matches

@@ -39,28 +39,40 @@ class A1Range implements Comparable<A1Range> {
   /// Creates a range from two supplied A1Partials for from and to
   /// ensures 'from' is less than or equal to 'to' when not all
   /// if the from is an A1 is will be treated as the anchor
-  factory A1Range.fromPartials(A1Partial from, A1Partial to, {Object? tag}) {
+  factory A1Range.fromPartials(A1Partial from, A1Partial to,
+      {Object? tag, A1? anchor}) {
     final (left, top, right, bottom) = _rectify(from, to, min: -1);
     final fromNormal = A1Partial.fromVector(
         _minPartial(left, right), _minPartial(top, bottom));
     final toNormal = A1Partial.fromVector(
         _maxPartial(left, right), _maxPartial(top, bottom));
 
-    return A1Range._(fromNormal, toNormal, anchor: from.a1, tag: tag);
+    return A1Range._(fromNormal, toNormal, anchor: anchor ?? from.a1, tag: tag);
   }
 
   /// Creates a range from two supplied A1s for from and to
   /// ensures 'from' is less than or equal to 'to'
   /// the fromA1 will be used as the anchor in the range
-  factory A1Range.fromA1s(A1 fromA1, A1 toA1, {Object? tag}) {
+  factory A1Range.fromA1s(A1 fromA1, A1 toA1, {Object? tag, A1? anchor}) {
     final (left, top, right, bottom) =
         _rectify(A1Partial.fromA1(fromA1), A1Partial.fromA1(toA1), min: -1);
     final fromNormal = A1Partial.fromVector(
         _minPartial(left, right), _minPartial(top, bottom));
     final toNormal = A1Partial.fromVector(
         _maxPartial(left, right), _maxPartial(top, bottom));
-    return A1Range._(fromNormal, toNormal, anchor: fromA1, tag: tag);
+    return A1Range._(fromNormal, toNormal, anchor: anchor ?? fromA1, tag: tag);
   }
+
+  /// Creates a range from fromColumn, fromRow, toColumn, toRow
+  factory A1Range.fromCoordinates(
+          int? fromColumn, int? fromRow, int? toColumn, int? toRow,
+          {Object? tag, A1? anchor}) =>
+      A1Range.fromPartials(
+        A1Partial.fromVector(fromColumn, fromRow),
+        A1Partial.fromVector(toColumn, toRow),
+        tag: tag,
+        anchor: anchor,
+      );
 
   /// Parses a string containing an A1Range literal into an A1Range.
   ///
@@ -499,6 +511,32 @@ class A1Range implements Comparable<A1Range> {
     }
     return true;
   }
+
+  /// width based on assume full columns are maxInt
+  int get width => (to.column ?? _maxInt) - (from.column ?? 0);
+
+  /// height based on assume full rows are maxInt
+  int get height => (to.row ?? _maxInt) - (from.row ?? 0);
+
+  /// adjust range left relative to anchor
+  A1Range get goLeft => (anchor?.column ?? 0) == right
+      ? copyWith(from: from.left)
+      : copyWith(to: to.left);
+
+  /// adjust range right relative to anchor
+  A1Range get goRight => (anchor?.column ?? 0) == right
+      ? copyWith(from: from.right)
+      : copyWith(to: to.right);
+
+  /// adjust range up relative to anchor
+  A1Range get goUp => (anchor?.row ?? 0) == bottom
+      ? copyWith(from: from.up)
+      : copyWith(to: to.up);
+
+  /// adjust range down relative to anchor
+  A1Range get goDown => (anchor?.row ?? 0) == bottom
+      ? copyWith(from: from.down)
+      : copyWith(to: to.down);
 }
 
 /// This extension allows an [A1Range] to be create from a [String]
