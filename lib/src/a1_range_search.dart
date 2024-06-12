@@ -174,6 +174,44 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
     return newRange;
   }
 
+  /// Move the [A1Range] a page upwards based on the anchor and merged
+  /// [A1Range]s
+  A1Range pageUp(A1Range range, int page) {
+    if (range.top == 0) return range;
+    var newRange = range.pageUp(page);
+    final mergedRanges = rangesIn(newRange);
+
+    if (newRange.top < range.top) {
+      newRange = _expandToMergeBoundaries(newRange, mergedRanges);
+    } else {
+      newRange = _contractToMergeBoundaries(newRange, mergedRanges);
+      if (newRange == range) {
+        newRange = range.copyWith(from: range.from.up);
+        newRange = _expandToMergeBoundaries(newRange, mergedRanges);
+      }
+    }
+    return newRange;
+  }
+
+  /// Move the [A1Range] a page downwards based on the anchor and merged
+  /// [A1Range]s
+  A1Range pageDown(A1Range range, int page) {
+    if (range.bottom == _maxInt) return range;
+    var newRange = range.pageDown(page);
+    final mergedRanges = rangesIn(newRange);
+
+    if (newRange.bottom > range.bottom) {
+      newRange = _expandToMergeBoundaries(newRange, mergedRanges);
+    } else {
+      newRange = _contractToMergeBoundaries(newRange, mergedRanges);
+      if (newRange == range) {
+        newRange = range.copyWith(to: range.to.down);
+        newRange = _expandToMergeBoundaries(newRange, mergedRanges);
+      }
+    }
+    return newRange;
+  }
+
   A1Range _expandToMergeBoundaries(A1Range range, List<A1Range> ranges) {
     final newRange = A1Partial.rangefromList(
       [range.from, ...(ranges.map((e) => e.from))],

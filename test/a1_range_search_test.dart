@@ -157,7 +157,7 @@ void main() {
       expect(a1b.cellDown('D21:E20'.a1Range), equals('D20:E22'.a1Range));
 
       // try different anchor
-      //expect(a1b.cellDown('D20:E21'.a1Range), equals('D20:E22'.a1Range));
+      expect(a1b.cellDown('D20:E21'.a1Range), equals('D20:E22'.a1Range));
     });
 
     test("test down when contracting switch to expanding multiple merges", () {
@@ -241,6 +241,71 @@ void main() {
     test(' right with a cascade of row merges', () {
       final newRange = a1b.cellRight('C25:C25'.a1Range);
       expect(newRange, equals('C25:D28'.a1Range));
+    });
+  });
+
+  group("Merged Range Cell moves - pageUp", () {
+    final a1b = A1RangeSearch();
+    a1b['G14:H16'.a1Range] = true;
+    a1b['E20:E21'.a1Range] = true;
+    a1b['C17:C20'.a1Range] = true;
+
+    a1b['C5:D5'.a1Range] = true;
+    a1b['E5:F5'.a1Range] = true;
+    a1b['D6:E6'.a1Range] = true;
+
+    a1b['C26:C27'.a1Range] = true;
+    a1b['D25:D26'.a1Range] = true;
+    a1b['D27:D28'.a1Range] = true;
+
+    test(" up no merges", () {
+      expect(a1b.pageUp('K2:L3'.a1Range, 26), equals('K1:L2'.a1Range));
+      expect(a1b.pageUp('K2:L8'.a1Range, 5), equals('K2:L3'.a1Range));
+
+      // opposite anchor
+      expect(a1b.pageUp('K3:L2'.a1Range, 26), equals('K1:L3'.a1Range));
+    });
+
+    test(" up merged below", () {
+      expect(a1b.pageUp('G13:H16'.a1Range, 26), equals('G1:H13'.a1Range));
+      expect(a1b.pageUp('C25:D28'.a1Range, 2), equals('C24:D28'.a1Range));
+    });
+    test(" up when contracting switch to expanding one merge", () {
+      expect(a1b.pageUp('D20:E21'.a1Range, 26), equals('C1:F21'.a1Range));
+
+      // try different anchor
+      expect(a1b.pageUp('D21:E20'.a1Range, 26), equals('C1:F21'.a1Range));
+    });
+
+    test(" up when contracting switch to expanding multiple merges", () {
+      expect(a1b.pageUp('C21:E17'.a1Range, 10), equals('C7:E21'.a1Range));
+    });
+  });
+  group("Merged Range Cell moves - pageDown", () {
+    final a1b = A1RangeSearch();
+    a1b['J10:K12'.a1Range] = true;
+    a1b['E20:E21'.a1Range] = true;
+    a1b['C17:C20'.a1Range] = true;
+
+    test(" pageDown no merges", () {
+      expect(a1b.pageDown('K2:L3'.a1Range, 2), equals('K2:L5'.a1Range));
+
+      // opposite anchor
+      expect(a1b.pageDown('K3:L2'.a1Range, 2), equals('K3:L4'.a1Range));
+    });
+
+    test(" down merged above", () {
+      expect(a1b.pageDown('J13:K10'.a1Range, 2), equals('J13:K13'.a1Range));
+    });
+    test(" down when contracting switch to expanding one merge", () {
+      expect(a1b.pageDown('D21:E20'.a1Range, 2), equals('D20:E22'.a1Range));
+
+      // try different anchor
+      expect(a1b.pageDown('D20:E21'.a1Range, 2), equals('D20:E23'.a1Range));
+    });
+
+    test("test down when contracting switch to expanding multiple merges", () {
+      expect(a1b.pageDown('C21:E17'.a1Range, 2), equals('C17:E22'.a1Range));
     });
   });
 }

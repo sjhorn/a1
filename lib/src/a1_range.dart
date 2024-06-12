@@ -537,6 +537,16 @@ class A1Range implements Comparable<A1Range> {
   A1Range get goDown => (anchor?.row ?? 0) != top
       ? copyWith(from: from.down)
       : copyWith(to: to.down);
+
+  /// adjust range a page down relative to anchor
+  A1Range pageUp(int page) => (anchor?.row ?? 0) != bottom
+      ? copyWith(to: to.goUp(page))
+      : copyWith(from: from.goUp(page));
+
+  /// adjust range a page down relative to anchor
+  A1Range pageDown(int page) => (anchor?.row ?? 0) != top
+      ? copyWith(from: from.goDown(page))
+      : copyWith(to: to.goDown(page));
 }
 
 /// This extension allows an [A1Range] to be create from a [String]

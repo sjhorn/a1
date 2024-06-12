@@ -181,26 +181,40 @@ class A1Partial implements Comparable {
   }
 
   /// utility for moving right
-  A1Partial get right => vectorCopyWith(
-      column: column != null && column! < _maxInt ? column! + 1 : null);
+  A1Partial get right => goRight(1);
 
   /// utility for moving left
-  A1Partial get left => vectorCopyWith(
-      column: column == null
-          ? null
-          : column! > 0
-              ? column! - 1
-              : 0);
+  A1Partial get left => goLeft(1);
 
   /// utility for moving down
-  A1Partial get down =>
-      vectorCopyWith(row: row != null && row! < _maxInt ? row! + 1 : null);
+  A1Partial get down => goDown(1);
 
   /// utility for moving up
-  A1Partial get up => vectorCopyWith(
-      row: row == null
-          ? null
-          : row! > 0
-              ? row! - 1
-              : 0);
+  A1Partial get up => goUp(1);
+
+  /// adjust [A1PArtial] down by count
+  A1Partial goDown(int count) {
+    if (row == null) return this;
+    return vectorCopyWith(
+        row: (_maxInt - count) < row! ? _maxInt : row! + count);
+  }
+
+  /// adjust [A1PArtial] up by count
+  A1Partial goUp(int count) {
+    if (row == null) return this;
+    return vectorCopyWith(row: (row! - count) < 0 ? 0 : row! - count);
+  }
+
+  /// adjust [A1PArtial] right by count
+  A1Partial goRight(int count) {
+    if (column == null) return this;
+    return vectorCopyWith(
+        column: (_maxInt - count) < column! ? _maxInt : column! + count);
+  }
+
+  /// adjust [A1PArtial] left by count
+  A1Partial goLeft(int count) {
+    if (column == null) return this;
+    return vectorCopyWith(column: (column! - count) < 0 ? 0 : column! - count);
+  }
 }

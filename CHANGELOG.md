@@ -1,3 +1,7 @@
+## 2.0.1
+- MergedRange pageUp/pageDown in [A1RangeSearch] and [A1Range]
+- Added goUp(count)/goLeft(count)/goRight(count)/goDown(count) to [A1Partial]
+
 ## 2.0.0
 - Breaking changes on comparison of [A1], to provide deterministic binary searches
 - Addition of [A1RangeSearch] that features a binary, quadtree searches and merge movements across mutliple [A1Range]s for a match
