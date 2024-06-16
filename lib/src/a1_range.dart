@@ -41,21 +41,26 @@ class A1Range implements Comparable<A1Range> {
   /// if the from is an A1 is will be treated as the anchor
   factory A1Range.fromPartials(A1Partial from, A1Partial to,
       {Object? tag, A1? anchor}) {
-    final (left, top, right, bottom) = _rectify(from, to, min: -1);
+    final (left, top, right, bottom) = _rectify(from, to, minMarker: -1);
+
     final fromNormal = A1Partial.fromVector(
         _minPartial(left, right), _minPartial(top, bottom));
     final toNormal = A1Partial.fromVector(
         _maxPartial(left, right), _maxPartial(top, bottom));
 
-    return A1Range._(fromNormal, toNormal, anchor: anchor ?? from.a1, tag: tag);
+    return A1Range._(fromNormal, toNormal,
+        anchor: anchor ??
+            A1.fromVector(from.column ?? _maxInt, from.row ?? _maxInt),
+        tag: tag);
   }
 
   /// Creates a range from two supplied A1s for from and to
   /// ensures 'from' is less than or equal to 'to'
   /// the fromA1 will be used as the anchor in the range
   factory A1Range.fromA1s(A1 fromA1, A1 toA1, {Object? tag, A1? anchor}) {
-    final (left, top, right, bottom) =
-        _rectify(A1Partial.fromA1(fromA1), A1Partial.fromA1(toA1), min: -1);
+    final (left, top, right, bottom) = _rectify(
+        A1Partial.fromA1(fromA1), A1Partial.fromA1(toA1),
+        minMarker: -1);
     final fromNormal = A1Partial.fromVector(
         _minPartial(left, right), _minPartial(top, bottom));
     final toNormal = A1Partial.fromVector(
@@ -157,7 +162,7 @@ class A1Range implements Comparable<A1Range> {
     final (left, top, right, bottom) = _rectify(
       from ?? this.from,
       to ?? this.to,
-      min: -1,
+      minMarker: -1,
     );
     final fromNormal = A1Partial.fromVector(
         _minPartial(left, right), _minPartial(top, bottom));
@@ -179,40 +184,11 @@ class A1Range implements Comparable<A1Range> {
   double get area => from.a1?.area(to.a1) ?? double.infinity;
 
   /// Does this [A1Range] contain this [A1]
-  bool contains(A1 a1) {
-    return switch ((from.column, from.row, to.column, to.row)) {
-      (int(), int(), int(), int()) => a1.column >= from.column! &&
-          a1.row >= from.row! &&
-          a1.column <= to.column! &&
-          a1.row <= to.row!,
-      (null, int(), int(), int()) =>
-        a1.row >= from.row! && a1.column <= to.column! && a1.row <= to.row!,
-      (null, null, int(), int()) =>
-        a1.column <= to.column! && a1.row <= to.row!,
-      (null, null, null, null) => true,
-      (int(), null, int(), int()) => a1.column >= from.column! &&
-          a1.column <= to.column! &&
-          a1.row <= to.row!,
-      (int(), null, null, int()) =>
-        a1.column >= from.column! && a1.row <= to.row!,
-      (int(), null, null, null) => a1.column >= from.column!,
-      (int(), int(), null, int()) =>
-        a1.column >= from.column! && a1.row >= from.row! && a1.row <= to.row!,
-      (int(), int(), null, null) =>
-        a1.column >= from.column! && a1.row >= from.row!,
-      (int(), int(), int(), null) => a1.column >= from.column! &&
-          a1.row >= from.row! &&
-          a1.column <= to.column!,
-      (int(), null, int(), null) =>
-        a1.column >= from.column! && a1.column <= to.column!,
-      (null, int(), int(), null) =>
-        a1.row <= from.row! && a1.column <= to.column!,
-      (null, int(), null, int()) => a1.row >= from.row! && a1.row <= to.row!,
-      (null, int(), null, null) => a1.row >= from.row!,
-      (null, null, int(), null) => a1.column <= to.column!,
-      (null, null, null, int()) => a1.row <= to.row!,
-    };
-  }
+  bool contains(A1 a1) =>
+      a1.row >= top &&
+      a1.row <= bottom &&
+      a1.column >= left &&
+      a1.column <= right;
 
   /// Does this [A1Range] have this [A1] at one of its corners.
   bool hasCorner(A1 a1) {
@@ -391,14 +367,18 @@ class A1Range implements Comparable<A1Range> {
   /// the to.row or maximum integer for the system
   int get bottom => (to.row ?? _maxInt);
 
-  // utility to move [A1Range] in to rectable-like scalars
+  // utility to move [A1Range] to rectangle-like scalars
   static (int, int, int, int) _rectify(A1Partial from, A1Partial to,
-          {int min = 0}) =>
+          {int minMarker = 0}) =>
       (
-        from.column ?? min,
-        from.row ?? min,
-        to.column ?? _maxInt,
-        to.row ?? _maxInt,
+        from.column == null && to.column == null
+            ? minMarker
+            : min(from.column ?? _maxInt, to.column ?? _maxInt),
+        from.row == null && to.row == null
+            ? minMarker
+            : min(from.row ?? _maxInt, to.row ?? _maxInt),
+        max(to.column ?? _maxInt, from.column ?? _maxInt),
+        max(to.row ?? _maxInt, from.row ?? _maxInt),
       );
 
   /// Return the [A1Range]s that is left after subtracting
@@ -481,9 +461,9 @@ class A1Range implements Comparable<A1Range> {
       return copyWith(tag: intersectTag);
     }
     final (int left, int top, int right, int bottom) =
-        _rectify(from, to, min: -1);
+        _rectify(from, to, minMarker: -1);
     final (int otherLeft, int otherTop, int otherRight, int otherBottom) =
-        _rectify(other.from, other.to, min: -1);
+        _rectify(other.from, other.to, minMarker: -1);
 
     return A1Range.fromPartials(
       A1Partial.fromVector(
@@ -519,34 +499,35 @@ class A1Range implements Comparable<A1Range> {
   int get height => (to.row ?? _maxInt) - (from.row ?? 0);
 
   /// adjust range left relative to anchor
-  A1Range get goLeft => (anchor?.column ?? 0) != right
-      ? copyWith(to: to.left)
-      : copyWith(from: from.left);
+  A1Range get goLeft =>
+      !anchorIsRight ? copyWith(to: to.left) : copyWith(from: from.left);
 
   /// adjust range right relative to anchor
-  A1Range get goRight => (anchor?.column ?? 0) != left
-      ? copyWith(from: from.right)
-      : copyWith(to: to.right);
+  A1Range get goRight =>
+      !anchorIsLeft ? copyWith(from: from.right) : copyWith(to: to.right);
 
   /// adjust range up relative to anchor
-  A1Range get goUp => (anchor?.row ?? 0) != bottom
-      ? copyWith(to: to.up)
-      : copyWith(from: from.up);
+  A1Range get goUp =>
+      !anchorIsBottom ? copyWith(to: to.up) : copyWith(from: from.up);
 
   /// adjust range down relative to anchor
-  A1Range get goDown => (anchor?.row ?? 0) != top
-      ? copyWith(from: from.down)
-      : copyWith(to: to.down);
+  A1Range get goDown =>
+      !anchorIsTop ? copyWith(from: from.down) : copyWith(to: to.down);
 
   /// adjust range a page down relative to anchor
-  A1Range pageUp(int page) => (anchor?.row ?? 0) != bottom
+  A1Range pageUp(int page) => !anchorIsBottom
       ? copyWith(to: to.goUp(page))
       : copyWith(from: from.goUp(page));
 
   /// adjust range a page down relative to anchor
-  A1Range pageDown(int page) => (anchor?.row ?? 0) != top
+  A1Range pageDown(int page) => !anchorIsTop
       ? copyWith(from: from.goDown(page))
       : copyWith(to: to.goDown(page));
+
+  bool get anchorIsBottom => (anchor?.row ?? 0) == bottom;
+  bool get anchorIsRight => (anchor?.column ?? 0) == right;
+  bool get anchorIsLeft => (anchor?.column ?? 0) == left;
+  bool get anchorIsTop => (anchor?.row ?? 0) == top;
 }
 
 /// This extension allows an [A1Range] to be create from a [String]

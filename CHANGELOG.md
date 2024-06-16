@@ -1,6 +1,8 @@
 ## 2.0.1
 - MergedRange pageUp/pageDown in [A1RangeSearch] and [A1Range]
 - Added goUp(count)/goLeft(count)/goRight(count)/goDown(count) to [A1Partial]
+- Added pageUp(page)/pageDown(page) to [A1]
+- Removed [A1Vector] and [A1Area] helpers as no longer used
 
 ## 2.0.0
 - Breaking changes on comparison of [A1], to provide deterministic binary searches

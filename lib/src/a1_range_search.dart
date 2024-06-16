@@ -101,7 +101,6 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
   /// Move the [A1Range] one cell upwards based on the anchor and merged
   /// [A1Range]s
   A1Range cellUp(A1Range range) {
-    if (range.top == 0) return range;
     var newRange = range.goUp;
     final mergedRanges = rangesIn(newRange);
 
@@ -120,7 +119,6 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
   /// Move the [A1Range] one cell leftwards based on the anchor and merged
   /// [A1Range]s
   A1Range cellLeft(A1Range range) {
-    if (range.left == 0) return range;
     var newRange = range.goLeft;
     final mergedRanges = rangesIn(newRange);
 
@@ -139,7 +137,6 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
   /// Move the [A1Range] one cell downwards based on the anchor and merged
   /// [A1Range]s
   A1Range cellDown(A1Range range) {
-    if (range.bottom == _maxInt) return range;
     var newRange = range.goDown;
     final mergedRanges = rangesIn(newRange);
 
@@ -147,7 +144,7 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
       newRange = _expandToMergeBoundaries(newRange, mergedRanges);
     } else {
       newRange = _contractToMergeBoundaries(newRange, mergedRanges);
-      if (newRange == range) {
+      if (newRange == range && newRange.bottom < _maxInt) {
         newRange = range.copyWith(to: range.to.down);
         newRange = _expandToMergeBoundaries(newRange, mergedRanges);
       }
@@ -158,7 +155,6 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
   /// Move the [A1Range] one cell rightwards based on the anchor and merged
   /// [A1Range]s
   A1Range cellRight(A1Range range) {
-    if (range.right == _maxInt) return range;
     var newRange = range.goRight;
     final mergedRanges = rangesIn(newRange);
 
@@ -177,7 +173,7 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
   /// Move the [A1Range] a page upwards based on the anchor and merged
   /// [A1Range]s
   A1Range pageUp(A1Range range, int page) {
-    if (range.top == 0) return range;
+    //if (range.top == 0) return range;
     var newRange = range.pageUp(page);
     final mergedRanges = rangesIn(newRange);
 
@@ -196,7 +192,6 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
   /// Move the [A1Range] a page downwards based on the anchor and merged
   /// [A1Range]s
   A1Range pageDown(A1Range range, int page) {
-    if (range.bottom == _maxInt) return range;
     var newRange = range.pageDown(page);
     final mergedRanges = rangesIn(newRange);
 
@@ -204,7 +199,7 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
       newRange = _expandToMergeBoundaries(newRange, mergedRanges);
     } else {
       newRange = _contractToMergeBoundaries(newRange, mergedRanges);
-      if (newRange == range) {
+      if (newRange == range && newRange.bottom < _maxInt) {
         newRange = range.copyWith(to: range.to.down);
         newRange = _expandToMergeBoundaries(newRange, mergedRanges);
       }

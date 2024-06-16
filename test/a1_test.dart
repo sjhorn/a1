@@ -106,6 +106,26 @@ void main() {
       expect(moved.column, equals(1));
       expect(moved.row, equals(2));
     });
+
+    test('page up', () {
+      var moved = a1.pageUp(4);
+      expect(moved.column, equals(1));
+      expect(moved.row, equals(0));
+
+      moved = 'a10'.a1.pageUp(4);
+      expect(moved.column, equals(0));
+      expect(moved.row, equals(5));
+    });
+    test('page down', () {
+      const maxInt = -1 >>> 1;
+      var moved = A1.fromVector(0, maxInt).pageDown(4);
+      expect(moved.column, equals(0));
+      expect(moved.row, equals(maxInt - 1));
+
+      moved = 'a10'.a1.pageDown(4);
+      expect(moved.column, equals(0));
+      expect(moved.row, equals(13));
+    });
   });
 
   group('Operators', () {

@@ -130,7 +130,7 @@ void main() {
       int maxInt = -1 >>> 1;
       expect('A1:A2'.a1Range.left, equals(0));
       expect('A1:A2'.a1Range.left, equals(0));
-      expect('A:A2'.a1Range.top, equals(0));
+      expect('A:A2'.a1Range.top, equals(1)); // A2:A
       expect('1:A2'.a1Range.top, equals(0));
       expect('A1:Z2'.a1Range.right, equals(25));
       expect('A1:2'.a1Range.right, equals(maxInt));
@@ -141,12 +141,12 @@ void main() {
       int maxInt = -1 >>> 1;
       expect('A1:A1'.a1Range.columnSpan, equals(1));
       expect('A1:B2'.a1Range.columnSpan, equals(2));
-      expect('1:A2'.a1Range.columnSpan, equals(1));
+      expect('1:A2'.a1Range.columnSpan, equals(maxInt));
       expect('A1:2'.a1Range.columnSpan, equals(maxInt));
 
       expect('A1:A1'.a1Range.rowSpan, equals(1));
       expect('A1:B3'.a1Range.rowSpan, equals(3));
-      expect('A:A1'.a1Range.rowSpan, equals(1));
+      expect('A1:A'.a1Range.rowSpan, equals(maxInt));
       expect('A1:B'.a1Range.rowSpan, equals(maxInt));
     });
     test('leftBorder for various ranges', () {
@@ -154,7 +154,7 @@ void main() {
       expect('A1:B1'.a1Range.leftBorder, equals('A1:A1'.a1Range));
       expect('A1:A'.a1Range.leftBorder, equals('A1:A'.a1Range));
       expect('A1:2'.a1Range.leftBorder, equals('A1:A2'.a1Range));
-      expect('2:B2'.a1Range.leftBorder, equals('2:2'.a1Range));
+      expect('B2:2'.a1Range.leftBorder, equals('B2:B2'.a1Range));
       expect('A:B'.a1Range.leftBorder, equals('A:A'.a1Range));
       expect('1:1'.a1Range.leftBorder, equals('1:1'.a1Range));
     });
@@ -163,7 +163,7 @@ void main() {
       expect('A1:B1'.a1Range.rightBorder, equals('B1:B1'.a1Range));
       expect('A1:A'.a1Range.rightBorder, equals('A1:A'.a1Range));
       expect('A1:2'.a1Range.rightBorder, equals('1:2'.a1Range));
-      expect('2:B2'.a1Range.rightBorder, equals('B2:B2'.a1Range));
+      expect('2:B2'.a1Range.rightBorder, equals('2:2'.a1Range));
       expect('A:B'.a1Range.rightBorder, equals('B:B'.a1Range));
       expect('1:1'.a1Range.rightBorder, equals('1:1'.a1Range));
     });
@@ -199,7 +199,7 @@ void main() {
       expect('A1:B1'.a1Range.verticalBorders, equals('A1:A1'.a1Range));
       expect('A1:A'.a1Range.verticalBorders, isNull);
       expect('A1:2'.a1Range.verticalBorders, equals('A1:2'.a1Range));
-      expect('2:B2'.a1Range.verticalBorders, equals('2:A2'.a1Range));
+      expect('2:B2'.a1Range.verticalBorders, equals('B2:2'.a1Range));
       expect('A:B'.a1Range.verticalBorders, equals('A:A'.a1Range));
       expect('1:1'.a1Range.verticalBorders, equals('1:1'.a1Range));
     });
@@ -543,11 +543,12 @@ void main() {
     final toPartial2 = A1Range.parse('A1:B');
 
     test('valid from letters', () {
+      const maxInt = -1 >>> 1;
       expect(fromPartial1.from.letters, equals('B'));
-      expect(fromPartial1.to.digits, equals(2));
-      expect(fromPartial2.from.letters, isNull);
+      expect(fromPartial1.to.digits, isNull);
+      expect(fromPartial2.from.letters, equals('B'));
       expect(fromPartial2.from.digits, equals(1));
-      expect(fromPartial2.anchor, isNull);
+      expect(fromPartial2.anchor, equals(A1.fromVector(maxInt, 0)));
     });
     test('valid to letters', () {
       expect(toPartial1.to.letters, isNull);
@@ -582,7 +583,7 @@ void main() {
       expect('A1:a1'.a1Range.contains('a2'.a1), isFalse);
       expect('1:a1'.a1Range.contains('a2'.a1), isFalse);
       expect('1:a3'.a1Range.contains('a2'.a1), isTrue);
-      expect('a:a3'.a1Range.contains('a2'.a1), isTrue);
+      expect('a:a3'.a1Range.contains('a2'.a1), isFalse);
 
       // Some unparsables
       final a1 = A1Partial('A', 1);
@@ -595,11 +596,11 @@ void main() {
       expect(A1Range.fromPartials(a, b).contains('a2'.a1), isTrue);
       expect(A1Range.fromPartials(a1, b).contains('a2'.a1), isTrue);
       expect(A1Range.fromPartials(a1, null1).contains('a2'.a1), isTrue);
-      expect(A1Range.fromPartials(a, one).contains('a2'.a1), isFalse);
-      expect(A1Range.fromPartials(null1, one).contains('a2'.a1), isFalse);
+      expect(A1Range.fromPartials(a, one).contains('a2'.a1), isTrue);
+      expect(A1Range.fromPartials(null1, one).contains('a2'.a1), isTrue);
       expect(A1Range.fromPartials(null1, one).contains('a1'.a1), isTrue);
       expect(A1Range.fromPartials(null1, null1).contains('a1'.a1), isTrue);
-      expect(A1Range.fromPartials(null1, a1).contains('a2'.a1), isFalse);
+      expect(A1Range.fromPartials(null1, a1).contains('a2'.a1), isTrue);
       expect(A1Range.fromPartials(a1, one).contains('a2'.a1), isFalse);
       expect(A1Range.fromPartials(two, a).contains('a2'.a1), isTrue);
 

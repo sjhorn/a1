@@ -288,10 +288,12 @@ void main() {
     a1b['C17:C20'.a1Range] = true;
 
     test(" pageDown no merges", () {
+      expect(a1b.pageDown('M2:N'.a1Range, 2), equals('M2:N'.a1Range));
       expect(a1b.pageDown('K2:L3'.a1Range, 2), equals('K2:L5'.a1Range));
 
       // opposite anchor
       expect(a1b.pageDown('K3:L2'.a1Range, 2), equals('K3:L4'.a1Range));
+      expect(a1b.pageDown('M:N3'.a1Range, 2), equals('M5:N'.a1Range));
     });
 
     test(" down merged above", () {

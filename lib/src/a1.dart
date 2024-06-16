@@ -9,6 +9,7 @@ import 'package:a1/src/grammer/a1_notation.dart';
 import 'package:petitparser/petitparser.dart';
 
 class A1 implements Comparable<A1> {
+  static final int _maxInt = -1 >>> 1;
   static final A1Notation _a1n = A1Notation();
 
   /// Uppercase letters for the A part of A1 notation
@@ -95,7 +96,7 @@ class A1 implements Comparable<A1> {
       throw FormatException('row $row must be positive');
     }
     letters = column.a1Letters;
-    digits = row + 1;
+    digits = row < _maxInt ? row + 1 : _maxInt;
   }
 
   /// Create a list of A1's between this A1 and to
@@ -171,18 +172,25 @@ class A1 implements Comparable<A1> {
       A1.fromVector(column + other.column, row + other.row);
 
   /// Returns the [A1] to the right of the current [A1]
-  A1 get right => A1.fromVector(column + 1, row);
+  A1 get right => A1.fromVector(column < _maxInt ? column + 1 : _maxInt, row);
 
   /// Returns the [A1] to the left of the current [A1] if already
   /// in column 0 will return a copy of the current cell
   A1 get left => A1.fromVector(max(0, column - 1), row);
 
   /// Returns the [A1] below the current [A1]
-  A1 get down => A1.fromVector(column, row + 1);
+  A1 get down => A1.fromVector(column, row < _maxInt ? row + 1 : _maxInt);
 
   /// Returns the [A1] above the current [A1] if already
   /// in row 0 will return a copy of the current cell
   A1 get up => A1.fromVector(column, max(0, row - 1));
+
+  /// Returns the [A1] pageDown [page] relative to the current [A1]
+  A1 pageDown(int page) =>
+      A1.fromVector(column, _maxInt - page < row ? _maxInt : row + page);
+
+  /// Returns the [A1] pageDown [page] relative to the current [A1]
+  A1 pageUp(int page) => A1.fromVector(column, max(0, row - page));
 
   // Less than operator for two [A1]s
   bool operator <(A1 other) => compareTo(other) < 0;
