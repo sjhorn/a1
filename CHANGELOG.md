@@ -3,6 +3,7 @@
 - Added goUp(count)/goLeft(count)/goRight(count)/goDown(count) to [A1Partial]
 - Added pageUp(page)/pageDown(page) to [A1]
 - Removed [A1Vector] and [A1Area] helpers as no longer used
+- Adjusted [A1RangeSearch] to used [Quadtree] for rangeOf given binary search won't work correctly for 2D space
 
 ## 2.0.0
 - Breaking changes on comparison of [A1], to provide deterministic binary searches

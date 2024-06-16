@@ -13,11 +13,7 @@ import 'package:a1/src/helpers/simple_cache.dart';
 class A1RangeSearch<T> with MapMixin<A1Range, T> {
   static final int _maxInt = -1 >>> 1;
   final Map<A1Range, T> _map = {};
-  final SplayTreeSet<A1Range> _keys =
-      SplayTreeSet((k1, k2) => k1.compareTo(k2));
-
   final Quadtree _ranges = Quadtree(0, A1Range.all);
-
   final SimpleCache<A1, A1Range?> _cache = SimpleCache(10000);
 
   /// Search for a key in a sorted, non-overlapping set of of [A1Arange]s.
@@ -35,22 +31,9 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
     if (_cache.containsKey(cell)) {
       return _cache[cell];
     }
-    List<A1Range> sortedKeys = _keys.toList();
-
-    int left = 0;
-    int right = sortedKeys.length - 1;
-    while (left <= right) {
-      int middle = left + (right - left) ~/ 2;
-      A1Range guess = sortedKeys[middle];
-
-      if (guess.contains(cell)) {
-        _cache[cell] = guess;
-        return guess;
-      } else if (A1.fromVector(guess.left, guess.bottom) < cell) {
-        left = middle + 1;
-      } else {
-        right = middle - 1;
-      }
+    final ranges = rangesIn(A1Range.fromA1s(cell, cell));
+    if (ranges.isNotEmpty) {
+      return (_cache[cell] = ranges.first);
     }
     _cache[cell] = null;
     return null;
@@ -69,18 +52,14 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
   @override
   void operator []=(A1Range key, T value) {
     _map[key] = value;
-    _keys.add(key);
-
     _ranges.remove(key);
     _ranges.insert(key);
-
     _cache.clear();
   }
 
   @override
   void clear() {
     _map.clear();
-    _keys.clear();
     _cache.clear();
     _ranges.clear();
   }
@@ -91,7 +70,6 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
   @override
   T? remove(Object? key) {
     _cache.clear();
-    _keys.remove(key);
     if (key is A1Range) {
       _ranges.remove(key);
     }
@@ -173,7 +151,6 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
   /// Move the [A1Range] a page upwards based on the anchor and merged
   /// [A1Range]s
   A1Range pageUp(A1Range range, int page) {
-    //if (range.top == 0) return range;
     var newRange = range.pageUp(page);
     final mergedRanges = rangesIn(newRange);
 
