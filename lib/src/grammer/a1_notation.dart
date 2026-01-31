@@ -20,7 +20,8 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
   Parser<SymbolMap> reference() => [
         uriReference(),
         filenameWithSheetReference(),
-        worksheetReference(),
+        quotedWorksheetReference(),
+        unquotedWorksheetReference(),
         range(),
       ].toChoiceParser();
 
@@ -123,6 +124,24 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
         (worksheet, range) => {
           ...worksheet,
           ...(range ?? {}),
+        },
+      );
+
+  /// Quoted worksheet: 'Name' with optional !range (unambiguous due to quotes)
+  Parser<SymbolMap> quotedWorksheetReference() =>
+      seq2(ref0(worksheetQuoted), ref0(bangRange).optional()).map2(
+        (worksheet, range) => {
+          ...worksheet,
+          ...(range ?? {}),
+        },
+      );
+
+  /// Unquoted worksheet: Name!range (bang required to disambiguate from cells)
+  Parser<SymbolMap> unquotedWorksheetReference() =>
+      seq2(ref0(worksheetName), ref0(bangRange)).map2(
+        (worksheet, range) => {
+          ...worksheet,
+          ...range,
         },
       );
 

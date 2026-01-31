@@ -121,6 +121,39 @@ void main() {
       expect(a1r.to, equals(A1Partial(null, null)));
     });
 
+    test('bare cell reference A1', () {
+      final a1r = A1Reference.parse('A1');
+      expect(a1r.worksheet, isNull);
+      expect(a1r.from.a1, equals('A1'.a1));
+    });
+    test('bare range reference A1:B2', () {
+      final a1r = A1Reference.parse('A1:B2');
+      expect(a1r.worksheet, isNull);
+      expect(a1r.from.a1, equals('A1'.a1));
+      expect(a1r.to.a1, equals('B2'.a1));
+    });
+    test('bare column range A:B', () {
+      final a1r = A1Reference.parse('A:B');
+      expect(a1r.worksheet, isNull);
+      expect(a1r.from, equals(A1Partial('A', null)));
+      expect(a1r.to, equals(A1Partial('B', null)));
+    });
+    test('bare row range 1:3', () {
+      final a1r = A1Reference.parse('1:3');
+      expect(a1r.worksheet, isNull);
+      expect(a1r.from, equals(A1Partial(null, 1)));
+      expect(a1r.to, equals(A1Partial(null, 3)));
+    });
+    test('bare column A', () {
+      final a1r = A1Reference.parse('A');
+      expect(a1r.worksheet, isNull);
+      expect(a1r.from, equals(A1Partial('A', null)));
+    });
+    test('quoted worksheet that looks like cell', () {
+      final a1r = A1Reference.parse("'A1'!B2");
+      expect(a1r.worksheet, equals('A1'));
+      expect(a1r.from.a1, equals('B2'.a1));
+    });
     test('invalid reference', () {
       expect(() => ''.a1Ref, throwsA(isA<FormatException>()));
       expect(() => ':a1'.a1Ref, throwsA(isA<FormatException>()));
@@ -151,7 +184,9 @@ void main() {
       );
       expect(
         () =>
-            "'[file]worksheet1!a1:b2".a1Ref.compareTo('worksheet1!a1:b2'.a1Ref),
+            "'c:/path/[file]worksheet1'!a1:b2"
+                .a1Ref
+                .compareTo('worksheet1!a1:b2'.a1Ref),
         throwsA(isA<UnsupportedError>()),
       );
     });

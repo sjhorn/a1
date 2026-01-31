@@ -173,6 +173,35 @@ void main() {
       final result = worksheet.parse("'Jan'").value;
       expect(result, containsPair(#worksheet, 'Jan'));
     });
+    test('quoted worksheet reference with range', () {
+      final parser = a1.buildFrom(a1.quotedWorksheetReference()).end();
+      final result = parser.parse("'Jan'!B2:B5").value;
+      expect(result, containsPair(#worksheet, 'Jan'));
+      expect(result, containsPair(#column1, 'B'));
+      expect(result, containsPair(#row1, '2'));
+      expect(result, containsPair(#column2, 'B'));
+      expect(result, containsPair(#row2, '5'));
+    });
+    test('quoted worksheet reference without range', () {
+      final parser = a1.buildFrom(a1.quotedWorksheetReference()).end();
+      final result = parser.parse("'Jan'").value;
+      expect(result, containsPair(#worksheet, 'Jan'));
+    });
+    test('unquoted worksheet reference with range', () {
+      final parser = a1.buildFrom(a1.unquotedWorksheetReference()).end();
+      final result = parser.parse("Sheet1!A1:Z26").value;
+      expect(result, containsPair(#worksheet, 'Sheet1'));
+      expect(result, containsPair(#column1, 'A'));
+      expect(result, containsPair(#row1, '1'));
+      expect(result, containsPair(#column2, 'Z'));
+      expect(result, containsPair(#row2, '26'));
+    });
+    test('unquoted worksheet reference requires bang', () {
+      final parser = a1.buildFrom(a1.unquotedWorksheetReference()).end();
+      expect(
+          () => parser.parse("Sheet1").value, throwsA(isA<ParserException>()));
+      expect(() => parser.parse("A1").value, throwsA(isA<ParserException>()));
+    });
     test('filename', () {
       final filename = a1.buildFrom(a1.filename()).end();
       final result = filename.parse("[file name]").value;
