@@ -387,4 +387,78 @@ void main() {
       expect(result.containsKey(#row2), isFalse);
     });
   });
+
+  group('Absolute reference parsing', () {
+    test('column with dollar', () {
+      final column = a1.buildFrom(a1.column()).end();
+      final result = column.parse('\$ABC').value;
+      expect(result, containsPair(#column, 'ABC'));
+      expect(result, containsPair(#columnAbsolute, true));
+      // without dollar
+      final result2 = column.parse('ABC').value;
+      expect(result2, containsPair(#columnAbsolute, false));
+    });
+
+    test('row with dollar', () {
+      final row = a1.buildFrom(a1.row()).end();
+      final result = row.parse('\$123').value;
+      expect(result, containsPair(#row, '123'));
+      expect(result, containsPair(#rowAbsolute, true));
+      // without dollar
+      final result2 = row.parse('123').value;
+      expect(result2, containsPair(#rowAbsolute, false));
+    });
+
+    test('a1 with various absolute combinations', () {
+      final a1p = a1.buildFrom(a1.a1()).end();
+      // \$A\$1
+      var result = a1p.parse('\$A\$1').value;
+      expect(result[#column], equals('A'));
+      expect(result[#row], equals('1'));
+      expect(result[#columnAbsolute], isTrue);
+      expect(result[#rowAbsolute], isTrue);
+      // \$A1
+      result = a1p.parse('\$A1').value;
+      expect(result[#columnAbsolute], isTrue);
+      expect(result[#rowAbsolute], isFalse);
+      // A\$1
+      result = a1p.parse('A\$1').value;
+      expect(result[#columnAbsolute], isFalse);
+      expect(result[#rowAbsolute], isTrue);
+      // A1
+      result = a1p.parse('A1').value;
+      expect(result[#columnAbsolute], isFalse);
+      expect(result[#rowAbsolute], isFalse);
+    });
+
+    test('a1Range with absolute references', () {
+      final a1Range = a1.buildFrom(a1.a1Range()).end();
+      var result = a1Range.parse('\$A\$1:\$B\$2').value;
+      expect(result[#column1Absolute], isTrue);
+      expect(result[#row1Absolute], isTrue);
+      expect(result[#column2Absolute], isTrue);
+      expect(result[#row2Absolute], isTrue);
+
+      // mixed
+      result = a1Range.parse('\$A1:B\$2').value;
+      expect(result[#column1Absolute], isTrue);
+      expect(result[#row1Absolute], isFalse);
+      expect(result[#column2Absolute], isFalse);
+      expect(result[#row2Absolute], isTrue);
+    });
+
+    test('rows with absolute references', () {
+      final rows = a1.buildFrom(a1.rows()).end();
+      var result = rows.parse('\$1:\$2').value;
+      expect(result[#row1Absolute], isTrue);
+      expect(result[#row2Absolute], isTrue);
+    });
+
+    test('cols with absolute references', () {
+      final cols = a1.buildFrom(a1.cols()).end();
+      var result = cols.parse('\$A:\$C').value;
+      expect(result[#column1Absolute], isTrue);
+      expect(result[#column2Absolute], isTrue);
+    });
+  });
 }

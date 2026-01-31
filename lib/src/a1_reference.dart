@@ -40,6 +40,10 @@ class A1Reference implements Comparable<A1Reference> {
   final int? row1;
   final String? column2;
   final int? row2;
+  final bool column1Absolute;
+  final bool row1Absolute;
+  final bool column2Absolute;
+  final bool row2Absolute;
 
   /// Private contructor
   A1Reference._({
@@ -60,6 +64,10 @@ class A1Reference implements Comparable<A1Reference> {
     this.row1,
     this.column2,
     this.row2,
+    this.column1Absolute = false,
+    this.row1Absolute = false,
+    this.column2Absolute = false,
+    this.row2Absolute = false,
   });
 
   /// Parses a string containing an A1Reference literal into an A1Reference.
@@ -102,10 +110,14 @@ class A1Reference implements Comparable<A1Reference> {
       A1Partial(
         value[#column1],
         value[#row1] is String ? int.parse(value[#row1]) : null,
+        columnAbsolute: value[#column1Absolute] ?? false,
+        rowAbsolute: value[#row1Absolute] ?? false,
       ),
       A1Partial(
         value[#column2],
         value[#row2] is String ? int.parse(value[#row2]) : null,
+        columnAbsolute: value[#column2Absolute] ?? false,
+        rowAbsolute: value[#row2Absolute] ?? false,
       ),
     );
 
@@ -127,14 +139,20 @@ class A1Reference implements Comparable<A1Reference> {
       row1: range.from.digits,
       column2: range.to.letters,
       row2: range.to.digits,
+      column1Absolute: range.from.columnAbsolute,
+      row1Absolute: range.from.rowAbsolute,
+      column2Absolute: range.to.columnAbsolute,
+      row2Absolute: range.to.rowAbsolute,
     );
   }
 
   /// return the from A1Partial
-  A1Partial get from => A1Partial(column1, row1);
+  A1Partial get from => A1Partial(column1, row1,
+      columnAbsolute: column1Absolute, rowAbsolute: row1Absolute);
 
   /// return the to A1Partial
-  A1Partial get to => A1Partial(column2, row2);
+  A1Partial get to => A1Partial(column2, row2,
+      columnAbsolute: column2Absolute, rowAbsolute: row2Absolute);
 
   /// return the A1Range
   A1Range get range => A1Range.fromPartials(from, to);

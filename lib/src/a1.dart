@@ -22,11 +22,20 @@ class A1 implements Comparable<A1> {
   /// Digits for the 1 in the A1 notation
   late final int digits;
 
+  /// Whether the column reference is absolute ($)
+  final bool columnAbsolute;
+
+  /// Whether the row reference is absolute ($)
+  final bool rowAbsolute;
+
   /// Utility for self reference in new pattern matching
   A1 get self => this;
 
   /// Private contructor
-  A1._(this.letters, this.digits) {
+  A1._(this.letters, this.digits, {
+    this.columnAbsolute = false,
+    this.rowAbsolute = false,
+  }) {
     if (row.isNegative) {
       throw FormatException('row $row must be positive');
     }
@@ -88,7 +97,12 @@ class A1 implements Comparable<A1> {
     if (digits == null) {
       return null;
     }
-    return A1._(letters, digits);
+    return A1._(
+      letters,
+      digits,
+      columnAbsolute: result.value[#columnAbsolute] ?? false,
+      rowAbsolute: result.value[#rowAbsolute] ?? false,
+    );
   }
 
   /// Returns a (column, row) vector representing the A1
@@ -107,7 +121,10 @@ class A1 implements Comparable<A1> {
   /// a1 = A1.fromVector(1,344); // B324
   /// a1 = A1.fromVector(1,-1); // FormatException
   /// ```
-  A1.fromVector(int column, int row) {
+  A1.fromVector(int column, int row, {
+    this.columnAbsolute = false,
+    this.rowAbsolute = false,
+  }) {
     if (row.isNegative) {
       throw FormatException('row $row must be positive');
     }
@@ -143,7 +160,20 @@ class A1 implements Comparable<A1> {
 
   /// Return a [String] of the A1
   @override
-  String toString() => '$letters$digits';
+  String toString() =>
+      '${columnAbsolute ? "\$" : ""}$letters${rowAbsolute ? "\$" : ""}$digits';
+
+  /// Copy with different absolute flags
+  A1 copyWith({
+    bool? columnAbsolute,
+    bool? rowAbsolute,
+  }) =>
+      A1._(
+        letters,
+        digits,
+        columnAbsolute: columnAbsolute ?? this.columnAbsolute,
+        rowAbsolute: rowAbsolute ?? this.rowAbsolute,
+      );
 
   /// Return the column as a zero based [int]
   int get column {

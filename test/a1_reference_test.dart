@@ -209,4 +209,42 @@ void main() {
           equals("'file://c/path1/path2/[file name]Work sheet'!A1:Z26"));
     });
   });
+
+  group('A1Reference with absolute references', () {
+    test('worksheet with absolute cell reference', () {
+      final ref = A1Reference.parse("'Sheet1'!\$A\$1:\$Z\$26");
+      expect(ref.column1Absolute, isTrue);
+      expect(ref.row1Absolute, isTrue);
+      expect(ref.column2Absolute, isTrue);
+      expect(ref.row2Absolute, isTrue);
+      expect(ref.toString(), equals("'Sheet1'!\$A\$1:\$Z\$26"));
+    });
+
+    test('bare absolute cell reference', () {
+      final ref = A1Reference.parse('\$A\$1');
+      expect(ref.column1Absolute, isTrue);
+      expect(ref.row1Absolute, isTrue);
+      expect(ref.from.columnAbsolute, isTrue);
+      expect(ref.from.rowAbsolute, isTrue);
+    });
+
+    test('bare absolute range reference', () {
+      final ref = A1Reference.parse('\$A\$1:\$B\$2');
+      expect(ref.column1Absolute, isTrue);
+      expect(ref.row1Absolute, isTrue);
+      expect(ref.column2Absolute, isTrue);
+      expect(ref.row2Absolute, isTrue);
+      expect(ref.from.columnAbsolute, isTrue);
+      expect(ref.to.rowAbsolute, isTrue);
+    });
+
+    test('mixed absolute range reference', () {
+      final ref = A1Reference.parse("Sheet1!\$A1:B\$2");
+      expect(ref.column1Absolute, isTrue);
+      expect(ref.row1Absolute, isFalse);
+      expect(ref.column2Absolute, isFalse);
+      expect(ref.row2Absolute, isTrue);
+      expect(ref.toString(), equals("'Sheet1'!\$A1:B\$2"));
+    });
+  });
 }

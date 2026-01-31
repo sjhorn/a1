@@ -207,15 +207,22 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
             #separator: separator[#separator]!,
             #column2: a2[#column]!,
             #row2: a2[#row]!,
+            #column1Absolute: a1[#columnAbsolute] ?? false,
+            #row1Absolute: a1[#rowAbsolute] ?? false,
+            #column2Absolute: a2[#columnAbsolute] ?? false,
+            #row2Absolute: a2[#rowAbsolute] ?? false,
           });
 
   // 2:C3 refers to all the cells in row 2 and 3 up to column C
   Parser<SymbolMap> rowsTo() =>
       seq3(ref0(row), ref0(separator), ref0(a1)).map3((row1, separator, a2) => {
             #row1: row1[#row]!,
+            #row1Absolute: row1[#rowAbsolute] ?? false,
             #separator: separator[#separator]!,
             #column2: a2[#column]!,
             #row2: a2[#row]!,
+            #column2Absolute: a2[#columnAbsolute] ?? false,
+            #row2Absolute: a2[#rowAbsolute] ?? false,
           });
 
   // C1:2 refers to all the cells in row 1 and 2 start at column C
@@ -223,25 +230,33 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
       seq3(ref0(a1), ref0(separator), ref0(row)).map3((a1, separator, row2) => {
             #column1: a1[#column]!,
             #row1: a1[#row]!,
+            #column1Absolute: a1[#columnAbsolute] ?? false,
+            #row1Absolute: a1[#rowAbsolute] ?? false,
             #separator: separator[#separator]!,
             #row2: row2[#row]!,
+            #row2Absolute: row2[#rowAbsolute] ?? false,
           });
 
   // 1:2 refers to all the cells in the first two rows of Sheet1.
   Parser<SymbolMap> rows() => seq3(ref0(row), ref0(separator), ref0(row))
       .map3((row1, separator, row2) => {
             #row1: row1[#row]!,
+            #row1Absolute: row1[#rowAbsolute] ?? false,
             #separator: separator[#separator]!,
             #row2: row2[#row]!,
+            #row2Absolute: row2[#rowAbsolute] ?? false,
           });
 
   // A:A5 refers to all the cells of the first column up to row 5
   Parser<SymbolMap> columnsTo() => seq3(ref0(column), ref0(separator), ref0(a1))
       .map3((column1, separator, a2) => {
             #column1: column1[#column]!,
+            #column1Absolute: column1[#columnAbsolute] ?? false,
             #separator: separator[#separator]!,
             #column2: a2[#column]!,
             #row2: a2[#row]!,
+            #column2Absolute: a2[#columnAbsolute] ?? false,
+            #row2Absolute: a2[#rowAbsolute] ?? false,
           });
 
   // A5:A refers to all the cells of the first column from row 5
@@ -250,16 +265,21 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
           .map3((a1, separator, column2) => {
                 #column1: a1[#column]!,
                 #row1: a1[#row]!,
+                #column1Absolute: a1[#columnAbsolute] ?? false,
+                #row1Absolute: a1[#rowAbsolute] ?? false,
                 #separator: separator[#separator]!,
                 #column2: column2[#column]!,
+                #column2Absolute: column2[#columnAbsolute] ?? false,
               });
 
   // A:C refers to all the cells of the first column up to column C
   Parser<SymbolMap> cols() => seq3(ref0(column), ref0(separator), ref0(column))
       .map3((column1, separator, column2) => {
             #column1: column1[#column]!,
+            #column1Absolute: column1[#columnAbsolute] ?? false,
             #seperator: separator[#separator]!,
-            #column2: column2[#column]!
+            #column2: column2[#column]!,
+            #column2Absolute: column2[#columnAbsolute] ?? false,
           });
 
   // Range separator either : or ...
@@ -268,25 +288,39 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
         string('...', message: 'ellipsis separator'),
       ].toChoiceParser().map((value) => {#separator: value});
 
-  // a1, AAZ123 complete A1
+  // a1, AAZ123, $A$1 complete A1
   Parser<SymbolMap> a1() =>
       seq2(ref0(column), ref0(row)).map2((column, row) => {
             #column: column[#column]!,
             #row: row[#row]!,
             #column1: column[#column]!,
             #row1: row[#row]!,
+            #columnAbsolute: column[#columnAbsolute] ?? false,
+            #column1Absolute: column[#column1Absolute] ?? false,
+            #rowAbsolute: row[#rowAbsolute] ?? false,
+            #row1Absolute: row[#row1Absolute] ?? false,
           });
 
-  // any letter a-z or A-Z repeating
+  // any letter a-z or A-Z repeating, optionally preceded by $
   Parser<SymbolMap> column() =>
-      letter().plus().flatten(message: 'column').map((value) => {
-            #column: value.toUpperCase(),
-            #column1: value.toUpperCase(),
-          });
+      seq2(char('\$').optional(), letter().plus().flatten(message: 'column'))
+          .map2((dollar, value) => {
+                #column: value.toUpperCase(),
+                #column1: value.toUpperCase(),
+                #columnAbsolute: dollar != null,
+                #column1Absolute: dollar != null,
+              });
 
-  // any number greater than 0
+  // any number greater than 0, optionally preceded by $
   Parser<SymbolMap> row() =>
-      seq2(anyOf('123456789'), digit().star().flatten(message: 'row'))
-          .flatten()
-          .map((value) => {#row: value, #row1: value});
+      seq2(
+        char('\$').optional(),
+        seq2(anyOf('123456789'), digit().star().flatten(message: 'row'))
+            .flatten(),
+      ).map2((dollar, value) => {
+            #row: value,
+            #row1: value,
+            #rowAbsolute: dollar != null,
+            #row1Absolute: dollar != null,
+          });
 }

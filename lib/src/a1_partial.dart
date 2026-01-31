@@ -15,6 +15,12 @@ class A1Partial implements Comparable {
   /// digits of the A1 or null for all rows
   final int? digits;
 
+  /// Whether the column reference is absolute ($)
+  final bool columnAbsolute;
+
+  /// Whether the row reference is absolute ($)
+  final bool rowAbsolute;
+
   /// Create a A1Partial from letters or null, and digits or null
   ///
   /// Examples:
@@ -24,7 +30,10 @@ class A1Partial implements Comparable {
   /// a1p = A1Partial(null, '1'); // 1 <all columns>
   /// a1p = A1Partial(null, null);  // <all columns & rows>
   /// ```
-  A1Partial(String? letters, this.digits) : letters = letters?.toUpperCase();
+  A1Partial(String? letters, this.digits, {
+    this.columnAbsolute = false,
+    this.rowAbsolute = false,
+  }) : letters = letters?.toUpperCase();
 
   /// Create a A1Partial from an A1
   ///
@@ -32,7 +41,12 @@ class A1Partial implements Comparable {
   /// ```dart
   /// A1Partial a1p = A1Partial.fromA1('a1'.a1); //A1
   /// ```
-  factory A1Partial.fromA1(A1 a1) => A1Partial(a1.letters, a1.digits);
+  factory A1Partial.fromA1(A1 a1) => A1Partial(
+        a1.letters,
+        a1.digits,
+        columnAbsolute: a1.columnAbsolute,
+        rowAbsolute: a1.rowAbsolute,
+      );
 
   /// Create a A1Partial from the partial vector
   ///
@@ -43,8 +57,16 @@ class A1Partial implements Comparable {
   /// a1p = A1Partial.fromVector(null, 1); // 1 <all columns>
   /// a1p = A1Partial.fromVector(null, null);  // <all columns & rows>
   /// ```
-  factory A1Partial.fromVector(int? column, int? row) =>
-      A1Partial(column?.a1Letters, row != null ? row + 1 : null);
+  factory A1Partial.fromVector(int? column, int? row, {
+    bool columnAbsolute = false,
+    bool rowAbsolute = false,
+  }) =>
+      A1Partial(
+        column?.a1Letters,
+        row != null ? row + 1 : null,
+        columnAbsolute: columnAbsolute,
+        rowAbsolute: rowAbsolute,
+      );
 
   /// If this partial has letters and digitis it get be returned as A1
   /// otherwise a null is returned
@@ -152,7 +174,9 @@ class A1Partial implements Comparable {
 
   /// Show the A1Partial with null left as a blank string
   @override
-  String toString() => '${letters ?? ""}${digits ?? ""}';
+  String toString() =>
+      '${columnAbsolute ? "\$" : ""}${letters ?? ""}'
+      '${rowAbsolute ? "\$" : ""}${digits ?? ""}';
 
   /// if both letters and digits are null this selects all
   bool get isAll => letters == null && digits == null;
@@ -170,10 +194,14 @@ class A1Partial implements Comparable {
   A1Partial vectorCopyWith({
     int? column,
     int? row,
+    bool? columnAbsolute,
+    bool? rowAbsolute,
   }) {
     return A1Partial.fromVector(
       column ?? this.column,
       row ?? this.row,
+      columnAbsolute: columnAbsolute ?? this.columnAbsolute,
+      rowAbsolute: rowAbsolute ?? this.rowAbsolute,
     );
   }
 

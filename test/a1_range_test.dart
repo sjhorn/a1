@@ -698,4 +698,61 @@ void main() {
       expect(range.columnIterable(3).toList(), equals([0, 1, 2, 3]));
     });
   });
+
+  group('A1Range with absolute references', () {
+    test('parse \$A\$1:\$B\$2', () {
+      final range = A1Range.parse('\$A\$1:\$B\$2');
+      expect(range.from.columnAbsolute, isTrue);
+      expect(range.from.rowAbsolute, isTrue);
+      expect(range.to.columnAbsolute, isTrue);
+      expect(range.to.rowAbsolute, isTrue);
+      expect(range.toString(), equals('\$A\$1:\$B\$2'));
+    });
+
+    test('parse mixed absolute \$A1:B\$2', () {
+      final range = A1Range.parse('\$A1:B\$2');
+      expect(range.from.columnAbsolute, isTrue);
+      expect(range.from.rowAbsolute, isFalse);
+      expect(range.to.columnAbsolute, isFalse);
+      expect(range.to.rowAbsolute, isTrue);
+      expect(range.toString(), equals('\$A1:B\$2'));
+    });
+
+    test('equality ignores absolute state', () {
+      expect(
+          A1Range.parse('\$A\$1:\$B\$2'), equals(A1Range.parse('A1:B2')));
+    });
+
+    test('round-trip toString', () {
+      expect(A1Range.parse('\$A\$1:\$B\$2').toString(), '\$A\$1:\$B\$2');
+      expect(A1Range.parse('\$A1:B\$2').toString(), '\$A1:B\$2');
+    });
+
+    test('normalization preserves absolute flags when reordering', () {
+      // B2:A1 normalizes to A1:B2
+      final range = A1Range.parse('\$B2:A\$1');
+      // from should get min column (A, from the non-absolute A side)
+      // to should get max column (B, from the $B absolute side)
+      expect(range.from.letters, equals('A'));
+      expect(range.to.letters, equals('B'));
+      expect(range.from.columnAbsolute, isFalse);
+      expect(range.to.columnAbsolute, isTrue);
+      // from should get min row (1, from the $1 absolute side)
+      // to should get max row (2, from the non-absolute 2 side)
+      expect(range.from.rowAbsolute, isTrue);
+      expect(range.to.rowAbsolute, isFalse);
+    });
+
+    test('absolute rows and columns ranges', () {
+      final rows = A1Range.parse('\$1:\$3');
+      expect(rows.from.rowAbsolute, isTrue);
+      expect(rows.to.rowAbsolute, isTrue);
+      expect(rows.toString(), equals('\$1:\$3'));
+
+      final cols = A1Range.parse('\$A:\$C');
+      expect(cols.from.columnAbsolute, isTrue);
+      expect(cols.to.columnAbsolute, isTrue);
+      expect(cols.toString(), equals('\$A:\$C'));
+    });
+  });
 }

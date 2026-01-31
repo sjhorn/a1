@@ -1,3 +1,10 @@
+## 2.2.0
+- Added `$` absolute reference notation support (`$A$1`, `$A1`, `A$1`, `A1`)
+- Added `columnAbsolute` and `rowAbsolute` fields to `A1`, `A1Partial`, and `A1Reference`
+- `toString()` round-trips absolute markers: `$A$1` parses and serializes correctly
+- Equality and hashCode remain position-based (absolute state does not affect equality)
+- Added `A1.copyWith()` for changing absolute flags on existing references
+
 ## 2.1.0
 - Added `A1.maxRows` and `A1.maxColumns` constants with bounds validation on construction
 - Added `A1Range.collapsed()` factory, `isCollapsed` getter, `rowIterable()` and `columnIterable()` methods

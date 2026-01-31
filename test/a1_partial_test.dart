@@ -92,4 +92,54 @@ void main() {
       );
     });
   });
+
+  group('A1Partial with absolute references', () {
+    test('constructor with absolute flags', () {
+      final p = A1Partial('A', 1, columnAbsolute: true, rowAbsolute: true);
+      expect(p.columnAbsolute, isTrue);
+      expect(p.rowAbsolute, isTrue);
+      expect(p.toString(), equals('\$A\$1'));
+    });
+
+    test('default flags are false', () {
+      final p = A1Partial('A', 1);
+      expect(p.columnAbsolute, isFalse);
+      expect(p.rowAbsolute, isFalse);
+    });
+
+    test('equality ignores absolute state', () {
+      expect(A1Partial('A', 1, columnAbsolute: true),
+          equals(A1Partial('A', 1)));
+    });
+
+    test('fromVector with absolute flags', () {
+      final p = A1Partial.fromVector(0, 0,
+          columnAbsolute: true, rowAbsolute: true);
+      expect(p.toString(), equals('\$A\$1'));
+    });
+
+    test('fromA1 preserves absolute state', () {
+      final a1 = A1.parse('\$A\$1');
+      final p = A1Partial.fromA1(a1);
+      expect(p.columnAbsolute, isTrue);
+      expect(p.rowAbsolute, isTrue);
+    });
+
+    test('vectorCopyWith preserves absolute state', () {
+      final p = A1Partial('A', 1, columnAbsolute: true, rowAbsolute: true);
+      final moved = p.vectorCopyWith(row: 5);
+      expect(moved.columnAbsolute, isTrue);
+      expect(moved.rowAbsolute, isTrue);
+    });
+
+    test('partial with only column absolute', () {
+      final p = A1Partial('A', null, columnAbsolute: true);
+      expect(p.toString(), equals('\$A'));
+    });
+
+    test('partial with only row absolute', () {
+      final p = A1Partial(null, 1, rowAbsolute: true);
+      expect(p.toString(), equals('\$1'));
+    });
+  });
 }

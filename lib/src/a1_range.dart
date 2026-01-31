@@ -41,10 +41,34 @@ class A1Range implements Comparable<A1Range> {
       {Object? tag, A1? anchor}) {
     final (left, top, right, bottom) = _rectify(from, to, minMarker: -1);
 
+    // Track which original partial contributed each component's absolute flag
+    final fromColAbsolute =
+        (from.column ?? A1.maxColumns) <= (to.column ?? A1.maxColumns)
+            ? from.columnAbsolute
+            : to.columnAbsolute;
+    final toColAbsolute =
+        (from.column ?? A1.maxColumns) <= (to.column ?? A1.maxColumns)
+            ? to.columnAbsolute
+            : from.columnAbsolute;
+    final fromRowAbsolute = (from.row ?? A1.maxRows) <= (to.row ?? A1.maxRows)
+        ? from.rowAbsolute
+        : to.rowAbsolute;
+    final toRowAbsolute = (from.row ?? A1.maxRows) <= (to.row ?? A1.maxRows)
+        ? to.rowAbsolute
+        : from.rowAbsolute;
+
     final fromNormal = A1Partial.fromVector(
-        _minColumnPartial(left, right), _minRowPartial(top, bottom));
+      _minColumnPartial(left, right),
+      _minRowPartial(top, bottom),
+      columnAbsolute: fromColAbsolute,
+      rowAbsolute: fromRowAbsolute,
+    );
     final toNormal = A1Partial.fromVector(
-        _maxColumnPartial(left, right), _maxRowPartial(top, bottom));
+      _maxColumnPartial(left, right),
+      _maxRowPartial(top, bottom),
+      columnAbsolute: toColAbsolute,
+      rowAbsolute: toRowAbsolute,
+    );
 
     return A1Range._(fromNormal, toNormal,
         anchor: anchor ??
@@ -56,13 +80,37 @@ class A1Range implements Comparable<A1Range> {
   /// ensures 'from' is less than or equal to 'to'
   /// the fromA1 will be used as the anchor in the range
   factory A1Range.fromA1s(A1 fromA1, A1 toA1, {Object? tag, A1? anchor}) {
-    final (left, top, right, bottom) = _rectify(
-        A1Partial.fromA1(fromA1), A1Partial.fromA1(toA1),
-        minMarker: -1);
+    final from = A1Partial.fromA1(fromA1);
+    final to = A1Partial.fromA1(toA1);
+    final (left, top, right, bottom) = _rectify(from, to, minMarker: -1);
+
+    final fromColAbsolute =
+        (from.column ?? A1.maxColumns) <= (to.column ?? A1.maxColumns)
+            ? from.columnAbsolute
+            : to.columnAbsolute;
+    final toColAbsolute =
+        (from.column ?? A1.maxColumns) <= (to.column ?? A1.maxColumns)
+            ? to.columnAbsolute
+            : from.columnAbsolute;
+    final fromRowAbsolute = (from.row ?? A1.maxRows) <= (to.row ?? A1.maxRows)
+        ? from.rowAbsolute
+        : to.rowAbsolute;
+    final toRowAbsolute = (from.row ?? A1.maxRows) <= (to.row ?? A1.maxRows)
+        ? to.rowAbsolute
+        : from.rowAbsolute;
+
     final fromNormal = A1Partial.fromVector(
-        _minColumnPartial(left, right), _minRowPartial(top, bottom));
+      _minColumnPartial(left, right),
+      _minRowPartial(top, bottom),
+      columnAbsolute: fromColAbsolute,
+      rowAbsolute: fromRowAbsolute,
+    );
     final toNormal = A1Partial.fromVector(
-        _maxColumnPartial(left, right), _maxRowPartial(top, bottom));
+      _maxColumnPartial(left, right),
+      _maxRowPartial(top, bottom),
+      columnAbsolute: toColAbsolute,
+      rowAbsolute: toRowAbsolute,
+    );
     return A1Range._(fromNormal, toNormal, anchor: anchor ?? fromA1, tag: tag);
   }
 
@@ -124,8 +172,18 @@ class A1Range implements Comparable<A1Range> {
       return null;
     }
     final value = result.value;
-    final left = A1Partial(value[#column1], int.tryParse(value[#row1] ?? ''));
-    final right = A1Partial(value[#column2], int.tryParse(value[#row2] ?? ''));
+    final left = A1Partial(
+      value[#column1],
+      int.tryParse(value[#row1] ?? ''),
+      columnAbsolute: value[#column1Absolute] ?? false,
+      rowAbsolute: value[#row1Absolute] ?? false,
+    );
+    final right = A1Partial(
+      value[#column2],
+      int.tryParse(value[#row2] ?? ''),
+      columnAbsolute: value[#column2Absolute] ?? false,
+      rowAbsolute: value[#row2Absolute] ?? false,
+    );
 
     return A1Range.fromPartials(left, right);
   }
@@ -163,15 +221,43 @@ class A1Range implements Comparable<A1Range> {
     A1? anchor,
     Object? tag,
   }) {
+    final newFrom = from ?? this.from;
+    final newTo = to ?? this.to;
     final (left, top, right, bottom) = _rectify(
-      from ?? this.from,
-      to ?? this.to,
+      newFrom,
+      newTo,
       minMarker: -1,
     );
+
+    final fromColAbsolute =
+        (newFrom.column ?? A1.maxColumns) <= (newTo.column ?? A1.maxColumns)
+            ? newFrom.columnAbsolute
+            : newTo.columnAbsolute;
+    final toColAbsolute =
+        (newFrom.column ?? A1.maxColumns) <= (newTo.column ?? A1.maxColumns)
+            ? newTo.columnAbsolute
+            : newFrom.columnAbsolute;
+    final fromRowAbsolute =
+        (newFrom.row ?? A1.maxRows) <= (newTo.row ?? A1.maxRows)
+            ? newFrom.rowAbsolute
+            : newTo.rowAbsolute;
+    final toRowAbsolute =
+        (newFrom.row ?? A1.maxRows) <= (newTo.row ?? A1.maxRows)
+            ? newTo.rowAbsolute
+            : newFrom.rowAbsolute;
+
     final fromNormal = A1Partial.fromVector(
-        _minColumnPartial(left, right), _minRowPartial(top, bottom));
+      _minColumnPartial(left, right),
+      _minRowPartial(top, bottom),
+      columnAbsolute: fromColAbsolute,
+      rowAbsolute: fromRowAbsolute,
+    );
     final toNormal = A1Partial.fromVector(
-        _maxColumnPartial(left, right), _maxRowPartial(top, bottom));
+      _maxColumnPartial(left, right),
+      _maxRowPartial(top, bottom),
+      columnAbsolute: toColAbsolute,
+      rowAbsolute: toRowAbsolute,
+    );
     return A1Range._(
       fromNormal,
       toNormal,

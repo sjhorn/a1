@@ -211,4 +211,72 @@ void main() {
       expect('2'.codeUnits.first.isA1Digit, isTrue);
     });
   });
+
+  group('Absolute references', () {
+    test('parse \$A\$1', () {
+      final a1 = A1.parse('\$A\$1');
+      expect(a1.column, equals(0));
+      expect(a1.row, equals(0));
+      expect(a1.columnAbsolute, isTrue);
+      expect(a1.rowAbsolute, isTrue);
+      expect(a1.toString(), equals('\$A\$1'));
+    });
+
+    test('parse \$A1', () {
+      final a1 = A1.parse('\$A1');
+      expect(a1.columnAbsolute, isTrue);
+      expect(a1.rowAbsolute, isFalse);
+      expect(a1.toString(), equals('\$A1'));
+    });
+
+    test('parse A\$1', () {
+      final a1 = A1.parse('A\$1');
+      expect(a1.columnAbsolute, isFalse);
+      expect(a1.rowAbsolute, isTrue);
+      expect(a1.toString(), equals('A\$1'));
+    });
+
+    test('parse A1 (default relative)', () {
+      final a1 = A1.parse('A1');
+      expect(a1.columnAbsolute, isFalse);
+      expect(a1.rowAbsolute, isFalse);
+      expect(a1.toString(), equals('A1'));
+    });
+
+    test('equality ignores absolute state', () {
+      expect(A1.parse('\$A\$1'), equals(A1.parse('A1')));
+      expect(A1.parse('\$A1'), equals(A1.parse('A\$1')));
+    });
+
+    test('hashCode ignores absolute state', () {
+      expect(A1.parse('\$A\$1').hashCode, equals(A1.parse('A1').hashCode));
+    });
+
+    test('round-trip toString', () {
+      expect(A1.parse('\$A\$1').toString(), equals('\$A\$1'));
+      expect(A1.parse('\$Z\$26').toString(), equals('\$Z\$26'));
+      expect(A1.parse('A\$1').toString(), equals('A\$1'));
+      expect(A1.parse('\$A1').toString(), equals('\$A1'));
+    });
+
+    test('copyWith absolute flags', () {
+      final a1 = A1.parse('A1');
+      final abs = a1.copyWith(columnAbsolute: true, rowAbsolute: true);
+      expect(abs.toString(), equals('\$A\$1'));
+      expect(abs, equals(a1));
+    });
+
+    test('fromVector with absolute flags', () {
+      final a1 = A1.fromVector(0, 0, columnAbsolute: true, rowAbsolute: true);
+      expect(a1.toString(), equals('\$A\$1'));
+    });
+
+    test('string extension with dollar', () {
+      final a1 = '\$B\$2'.a1;
+      expect(a1.column, equals(1));
+      expect(a1.row, equals(1));
+      expect(a1.columnAbsolute, isTrue);
+      expect(a1.rowAbsolute, isTrue);
+    });
+  });
 }
