@@ -7,7 +7,7 @@ import 'package:a1/a1.dart';
 import 'package:a1/src/helpers/quadtree.dart';
 import 'package:a1/src/helpers/simple_cache.dart';
 
-/// A wrapped [HashMap] of <A1Range,T> that stores the keys
+/// A wrapped [HashMap] of `<A1Range,T>` that stores the keys
 /// in a SplayTreeSet for sorting to optimise the quadtree to
 /// [valueOf] a value or retrieve [rangeOf] matching the cell
 class A1RangeSearch<T> with MapMixin<A1Range, T> {

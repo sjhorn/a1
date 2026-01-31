@@ -49,7 +49,7 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
   //
   Parser<SymbolMap> filePath() => seq4(
         ref0(quote),
-        pattern('^[').plus().flatten('uri'),
+        pattern('^[').plus().flatten(message: 'uri'),
         ref0(filenameWithSheet),
         ref0(quote),
       ).map4((q1, uriString, fileSheet, q2) {
@@ -107,7 +107,7 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
   // Filename with square brackets []
   //
   Parser<SymbolMap> filename() =>
-      seq3(char('['), pattern('^[]').plus().flatten('filename'), char(']'))
+      seq3(char('['), pattern('^[]').plus().flatten(message: 'filename'), char(']'))
           .map3((_, filename, __) => {#filename: filename});
 
   // A worksheet reference includes Worksheet with range
@@ -168,7 +168,7 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
   Parser<SymbolMap> worksheetName([String extras = ' ']) => seq2(
           pattern('^\t\n $worksheetPattern'),
           pattern('^$worksheetPattern$extras').repeat(0, 30))
-      .flatten('worksheet name')
+      .flatten(message: 'worksheet name')
       .map((value) => {#worksheet: value});
 
   // Invalid worksheet chars are :?*[]/\
@@ -264,8 +264,8 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
 
   // Range separator either : or ...
   Parser<SymbolMap> separator() => [
-        char(':', 'colon separator'),
-        string('...', 'ellipsis separator'),
+        char(':', message: 'colon separator'),
+        string('...', message: 'ellipsis separator'),
       ].toChoiceParser().map((value) => {#separator: value});
 
   // a1, AAZ123 complete A1
@@ -279,14 +279,14 @@ class A1Notation extends GrammarDefinition<SymbolMap> {
 
   // any letter a-z or A-Z repeating
   Parser<SymbolMap> column() =>
-      letter().plus().flatten('column').map((value) => {
+      letter().plus().flatten(message: 'column').map((value) => {
             #column: value.toUpperCase(),
             #column1: value.toUpperCase(),
           });
 
   // any number greater than 0
   Parser<SymbolMap> row() =>
-      seq2(anyOf('123456789'), digit().star().flatten('row'))
+      seq2(anyOf('123456789'), digit().star().flatten(message: 'row'))
           .flatten()
           .map((value) => {#row: value, #row1: value});
 }

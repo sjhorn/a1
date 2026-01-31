@@ -55,15 +55,15 @@ class A1Uri extends GrammarDefinition {
           #fragment: fragment?.$2,
         };
       });
-  Parser<String> _scheme() => pattern('^:/?#').plusString('scheme');
+  Parser<String> _scheme() => pattern('^:/?#').plusString(message: 'scheme');
 
-  Parser<String> _authority() => pattern('^/?#').starString('authority');
+  Parser<String> _authority() => pattern('^/?#').starString(message: 'authority');
 
-  Parser<String> _path() => pattern('^?#').starString('path');
+  Parser<String> _path() => pattern('^?#').starString(message: 'path');
 
-  Parser<String> _query() => pattern('^#').starString('query');
+  Parser<String> _query() => pattern('^#').starString(message: 'query');
 
-  Parser<String> _fragment() => any().starString('fragment');
+  Parser<String> _fragment() => any().starString(message: 'fragment');
 
   // Authoriy
   // Many URI schemes include a hierarchical element for a naming
@@ -88,14 +88,14 @@ class A1Uri extends GrammarDefinition {
       seq2(':'.toParser(), ref0(_password)).optional(),
       '@'.toParser());
 
-  Parser<String> _username() => pattern('^:@').plusString('username');
+  Parser<String> _username() => pattern('^:@').plusString(message: 'username');
 
-  Parser<String> _password() => pattern('^@').plusString('password');
+  Parser<String> _password() => pattern('^@').plusString(message: 'password');
 
-  Parser<String> _hostname() => pattern('^:').plusString('hostname');
+  Parser<String> _hostname() => pattern('^:').plusString(message: 'hostname');
 
   Parser<(String, String)> _port() =>
-      seq2(':'.toParser(), digit().plusString('port'));
+      seq2(':'.toParser(), digit().plusString(message: 'port'));
 
   // Query
   // The query component contains non-hierarchical data that, along with
@@ -108,7 +108,7 @@ class A1Uri extends GrammarDefinition {
       seq2(ref0(_paramKey), seq2('='.toParser(), ref0(_paramValue)).optional())
           .map2((key, value) => (key, value?.$2));
 
-  Parser<String> _paramKey() => pattern('^=&').starString('param key');
+  Parser<String> _paramKey() => pattern('^=&').starString(message: 'param key');
 
-  Parser<String> _paramValue() => pattern('^&').starString('param value');
+  Parser<String> _paramValue() => pattern('^&').starString(message: 'param value');
 }

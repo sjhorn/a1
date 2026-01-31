@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 
-Matcher equalsList(list) => _ListEquals(list);
+Matcher equalsList(List list) => _ListEquals(list);
 
 class _ListEquals<T> implements Matcher {
   List<T> list;

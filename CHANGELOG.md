@@ -4,6 +4,7 @@
 - Refactored [Quadtree] internals from array-based to map-based with `Quadrant` enum for correctness
 - Improved internal naming for row/column partial helpers
 - Fixed `A1Reference.parse` to treat bare cell/range strings (e.g. `A1`, `A1:B2`) as cell references instead of worksheet names
+- Upgraded to petitparser ^7.0.1 and lints ^6.1.0
 
 ## 2.0.1
 - MergedRange pageUp/pageDown in [A1RangeSearch] and [A1Range]

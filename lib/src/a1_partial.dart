@@ -130,10 +130,10 @@ class A1Partial implements Comparable {
   /// Return the row as a zero based [int] or null
   int? get row => digits != null ? digits! - 1 : null;
 
-  bool operator <(other) => compareTo(other) < 0;
-  bool operator <=(other) => compareTo(other) <= 0;
-  bool operator >(other) => compareTo(other) > 0;
-  bool operator >=(other) => compareTo(other) >= 0;
+  bool operator <(A1Partial other) => compareTo(other) < 0;
+  bool operator <=(A1Partial other) => compareTo(other) <= 0;
+  bool operator >(A1Partial other) => compareTo(other) > 0;
+  bool operator >=(A1Partial other) => compareTo(other) >= 0;
 
   /// If other is an A1Partial then compare letters/digits
   /// if it is an A1, try to see if this is castable as A1 and compare

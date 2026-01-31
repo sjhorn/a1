@@ -294,8 +294,8 @@ extension StringSetA1Extension on Set<String> {
   Set<A1> get a1 => map((e) => e.a1).toSet();
 }
 
-/// This extension allows a [Map<String,String>] to be converted to
-/// a [Map<A1,A1> to assist with cell movement tracking
+/// This extension allows a `Map<String,String>` to be converted to
+/// a `Map<A1,A1>` to assist with cell movement tracking
 extension MapA1Extension on Map<String, String> {
   /// Return a [Map<A1,A1>] from the current [Map<String,String>] or throw
   /// a [FormatException] see [A1.parse].
