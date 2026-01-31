@@ -1,10 +1,14 @@
 import 'package:a1/a1.dart';
 import 'package:test/test.dart';
 
+import 'equals_list.dart';
+
 void main() {
   group("A1RangeBinarySearch", () {
     A1RangeSearch rangeSearch = A1RangeSearch<bool>();
     A1RangeSearch rangeSearch2 = A1RangeSearch<bool>();
+    A1RangeSearch rangeSearch3 = A1RangeSearch<bool>();
+    A1RangeSearch rangeSearch4 = A1RangeSearch<bool>();
     setUp(() {
       rangeSearch = A1RangeSearch<bool>();
       rangeSearch['B2:B3'.a1Range] = true;
@@ -18,6 +22,22 @@ void main() {
         'C28:D28',
         'C30:D31',
       ].a1rSearch;
+
+      rangeSearch3 = A1RangeSearch<bool>();
+      rangeSearch3['C5:D5'.a1Range] = true;
+      rangeSearch3['E5:F5'.a1Range] = true;
+      rangeSearch3['D6:E6'.a1Range] = true;
+      rangeSearch3['D9:E9'.a1Range] = true;
+      rangeSearch3['G9:H12'.a1Range] = true;
+      rangeSearch3['B10:B11'.a1Range] = true;
+      rangeSearch3['G14:I15'.a1Range] = true;
+      rangeSearch3['E20:E21'.a1Range] = true;
+      rangeSearch3['C26:C27'.a1Range] = true;
+      rangeSearch3['D25:D26'.a1Range] = true;
+      rangeSearch3['D27:D28'.a1Range] = true;
+      rangeSearch3['A1:A99'.a1Range] = true;
+
+      rangeSearch4['G14:H16'.a1Range] = true;
     });
 
     test(" match", () {
@@ -42,6 +62,7 @@ void main() {
       expect(rangeSearch2.valueOf('C30'.a1), equals(true));
     });
     test(" rangeOf", () {
+      expect(rangeSearch3.rangeOf('A99'.a1), equals('A1:A99'.a1Range));
       expect(rangeSearch2.rangeOf('C30'.a1), equals('C30:D31'.a1Range));
 
       // expect the same result from a cache hit
@@ -54,10 +75,14 @@ void main() {
       expect(rangeSearch2.rangeOf('C50'.a1), isNull);
     });
     test(" rangesIn", () {
+      expect(
+          rangeSearch3.rangesIn('A:A'.a1Range), equalsList(['A1:A99'.a1Range]));
       expect(rangeSearch2.rangesIn('C30:C31'.a1Range),
-          everyElement(isIn(['C30:D31'.a1Range])));
+          equalsList(['C30:D31'.a1Range]));
       expect(rangeSearch2.rangesIn('C20:C21'.a1Range),
-          everyElement(isIn(['C20:D20'.a1Range])));
+          equalsList(['C20:D20'.a1Range]));
+      expect(rangeSearch4.rangesIn('G14:H15'.a1Range),
+          equalsList(['G14:H16'.a1Range]));
     });
     test(" [] operator", () {
       expect(rangeSearch['C2:C2'.a1Range], equals(true));

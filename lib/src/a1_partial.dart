@@ -8,7 +8,6 @@ import 'package:a1/a1.dart';
 class A1Partial implements Comparable {
   /// Empty/all [A1Partial]
   static A1Partial all = A1Partial(null, null);
-  static final _maxInt = -1 >>> 1;
 
   /// letters of the A1 or null for all columns
   final String? letters;
@@ -74,8 +73,6 @@ class A1Partial implements Comparable {
   static A1Range rangefromList(
       List<A1Partial?> listFrom, List<A1Partial?> listTo,
       {Object? tag, A1? anchor}) {
-    const maxInt = -1 >>> 1;
-
     // clean the nulls and create from list
     final fromItems = listFrom.where((element) => element != null);
     final fromColumns =
@@ -89,18 +86,18 @@ class A1Partial implements Comparable {
     // clean the nulls and create to list
     final toItems = listTo.where((element) => element != null);
     final toColumns =
-        toItems.map((A1Partial? e) => e?.column ?? maxInt).toList();
+        toItems.map((A1Partial? e) => e?.column ?? A1.maxColumns).toList();
     toColumns.sort();
 
     final toColumn = toColumns.last;
-    final toRows = toItems.map((A1Partial? e) => e?.row ?? maxInt).toList();
+    final toRows = toItems.map((A1Partial? e) => e?.row ?? A1.maxRows).toList();
     toRows.sort();
     final toRow = toRows.last;
 
     return A1Range.fromPartials(
       A1Partial.fromVector(fromColumn, fromRow),
-      A1Partial.fromVector(
-          toColumn == maxInt ? null : toColumn, toRow == maxInt ? null : toRow),
+      A1Partial.fromVector(toColumn == A1.maxColumns ? null : toColumn,
+          toRow == A1.maxRows ? null : toRow),
       tag: tag,
       anchor: anchor,
     );
@@ -196,7 +193,7 @@ class A1Partial implements Comparable {
   A1Partial goDown(int count) {
     if (row == null) return this;
     return vectorCopyWith(
-        row: (_maxInt - count) < row! ? _maxInt : row! + count);
+        row: (A1.maxRows - count) < row! ? A1.maxRows : row! + count);
   }
 
   /// adjust [A1PArtial] up by count
@@ -209,7 +206,9 @@ class A1Partial implements Comparable {
   A1Partial goRight(int count) {
     if (column == null) return this;
     return vectorCopyWith(
-        column: (_maxInt - count) < column! ? _maxInt : column! + count);
+        column: (A1.maxColumns - count) < column!
+            ? A1.maxColumns
+            : column! + count);
   }
 
   /// adjust [A1PArtial] left by count

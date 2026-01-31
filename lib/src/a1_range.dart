@@ -13,8 +13,6 @@ import 'package:a1/a1.dart';
 import 'package:a1/src/grammer/a1_notation.dart';
 
 class A1Range implements Comparable<A1Range> {
-  static const _maxInt = -1 >>> 1;
-
   /// All range
   static final A1Range all =
       A1Range._(A1Partial.all, A1Partial.all, anchor: 'A1'.a1);
@@ -44,13 +42,13 @@ class A1Range implements Comparable<A1Range> {
     final (left, top, right, bottom) = _rectify(from, to, minMarker: -1);
 
     final fromNormal = A1Partial.fromVector(
-        _minPartial(left, right), _minPartial(top, bottom));
+        _minColumnPartial(left, right), _minRowPartial(top, bottom));
     final toNormal = A1Partial.fromVector(
-        _maxPartial(left, right), _maxPartial(top, bottom));
+        _maxColumnPartial(left, right), _maxRowPartial(top, bottom));
 
     return A1Range._(fromNormal, toNormal,
         anchor: anchor ??
-            A1.fromVector(from.column ?? _maxInt, from.row ?? _maxInt),
+            A1.fromVector(from.column ?? A1.maxColumns, from.row ?? A1.maxRows),
         tag: tag);
   }
 
@@ -62,11 +60,17 @@ class A1Range implements Comparable<A1Range> {
         A1Partial.fromA1(fromA1), A1Partial.fromA1(toA1),
         minMarker: -1);
     final fromNormal = A1Partial.fromVector(
-        _minPartial(left, right), _minPartial(top, bottom));
+        _minColumnPartial(left, right), _minRowPartial(top, bottom));
     final toNormal = A1Partial.fromVector(
-        _maxPartial(left, right), _maxPartial(top, bottom));
+        _maxColumnPartial(left, right), _maxRowPartial(top, bottom));
     return A1Range._(fromNormal, toNormal, anchor: anchor ?? fromA1, tag: tag);
   }
+
+  /// Single cell range
+  factory A1Range.collapsed(A1 a1) => A1Range.fromA1s(a1, a1);
+
+  /// Is this a single cell range
+  bool get isCollapsed => from == to;
 
   /// Creates a range from fromColumn, fromRow, toColumn, toRow
   factory A1Range.fromCoordinates(
@@ -165,9 +169,9 @@ class A1Range implements Comparable<A1Range> {
       minMarker: -1,
     );
     final fromNormal = A1Partial.fromVector(
-        _minPartial(left, right), _minPartial(top, bottom));
+        _minColumnPartial(left, right), _minRowPartial(top, bottom));
     final toNormal = A1Partial.fromVector(
-        _maxPartial(left, right), _maxPartial(top, bottom));
+        _maxColumnPartial(left, right), _maxRowPartial(top, bottom));
     return A1Range._(
       fromNormal,
       toNormal,
@@ -232,13 +236,13 @@ class A1Range implements Comparable<A1Range> {
 
   /// is the row in this range
   bool hasRow(int row) {
-    final (fromR, toR) = (from.row ?? 0, to.row ?? _maxInt);
+    final (fromR, toR) = (from.row ?? 0, to.row ?? A1.maxRows);
     return row >= fromR && row <= toR;
   }
 
   /// is the column in this range
   bool hasColumn(int column) {
-    final (fromC, toC) = (from.column ?? 0, to.column ?? _maxInt);
+    final (fromC, toC) = (from.column ?? 0, to.column ?? A1.maxColumns);
     return column >= fromC && column <= toC;
   }
 
@@ -348,12 +352,12 @@ class A1Range implements Comparable<A1Range> {
   /// the number of columns between the start and end of this range
   /// uses the maximum integer of the system for unbound columns starting
   /// at 0, this will always be greater than or equal to 1
-  int get columnSpan => (right - left).a1PIncrement ?? _maxInt;
+  int get columnSpan => (right - left).columnPartialIncrement ?? A1.maxColumns;
 
   /// the number of rows between the start and end of this range
   /// uses the maximum integer of the system for unbound rows starting
   /// at 0, this will always be greater than or equal to 1
-  int get rowSpan => (bottom - top).a1PIncrement ?? _maxInt;
+  int get rowSpan => (bottom - top).rowPartialIncrement ?? A1.maxRows;
 
   /// the from.column or 0
   int get left => (from.column ?? 0);
@@ -362,10 +366,10 @@ class A1Range implements Comparable<A1Range> {
   int get top => (from.row ?? 0);
 
   /// the to.column or maximum integer for the system
-  int get right => (to.column ?? _maxInt);
+  int get right => (to.column ?? A1.maxColumns);
 
   /// the to.row or maximum integer for the system
-  int get bottom => (to.row ?? _maxInt);
+  int get bottom => (to.row ?? A1.maxRows);
 
   // utility to move [A1Range] to rectangle-like scalars
   static (int, int, int, int) _rectify(A1Partial from, A1Partial to,
@@ -373,12 +377,12 @@ class A1Range implements Comparable<A1Range> {
       (
         from.column == null && to.column == null
             ? minMarker
-            : min(from.column ?? _maxInt, to.column ?? _maxInt),
+            : min(from.column ?? A1.maxColumns, to.column ?? A1.maxColumns),
         from.row == null && to.row == null
             ? minMarker
-            : min(from.row ?? _maxInt, to.row ?? _maxInt),
-        max(to.column ?? _maxInt, from.column ?? _maxInt),
-        max(to.row ?? _maxInt, from.row ?? _maxInt),
+            : min(from.row ?? A1.maxRows, to.row ?? A1.maxRows),
+        max(to.column ?? A1.maxColumns, from.column ?? A1.maxColumns),
+        max(to.row ?? A1.maxRows, from.row ?? A1.maxRows),
       );
 
   /// Return the [A1Range]s that is left after subtracting
@@ -393,31 +397,34 @@ class A1Range implements Comparable<A1Range> {
     final (int x1, int y1, int x2, int y2) = _rectify(from, to);
     final (int otherX1, int otherY1, int otherX2, int otherY2) =
         _rectify(other.from, other.to);
+
     if (x1 < otherX1) {
       result.add(A1Range.fromPartials(
-        A1Partial.fromVector(x1.a1P, y1.a1P),
-        A1Partial.fromVector(otherX1.a1PDecrement, y2.a1P),
+        A1Partial.fromVector(x1.columnPartial, y1.rowPartial),
+        A1Partial.fromVector(otherX1.columnPartialDecrement, y2.rowPartial),
         tag: tag,
       ));
     }
     if (x2 > otherX2) {
       result.add(A1Range.fromPartials(
-        A1Partial.fromVector(otherX2.a1PIncrement, y1.a1P),
-        A1Partial.fromVector(x2.a1P, y2.a1P),
+        A1Partial.fromVector(otherX2.columnPartialIncrement, y1.rowPartial),
+        A1Partial.fromVector(x2.columnPartial, y2.rowPartial),
         tag: tag,
       ));
     }
     if (y1 < otherY1) {
       result.add(A1Range.fromPartials(
-        A1Partial.fromVector(max(x1, otherX1).a1P, y1.a1P),
-        A1Partial.fromVector(min(x2, otherX2).a1P, otherY1.a1PDecrement),
+        A1Partial.fromVector(max(x1, otherX1).columnPartial, y1.rowPartial),
+        A1Partial.fromVector(
+            min(x2, otherX2).columnPartial, otherY1.rowPartialDecrement),
         tag: tag,
       ));
     }
     if (y2 > otherY2) {
       result.add(A1Range.fromPartials(
-        A1Partial.fromVector(max(x1, otherX1).a1P, otherY2.a1PIncrement),
-        A1Partial.fromVector(min(x2, otherX2).a1P, y2.a1P),
+        A1Partial.fromVector(
+            max(x1, otherX1).columnPartial, otherY2.rowPartialIncrement),
+        A1Partial.fromVector(min(x2, otherX2).columnPartial, y2.rowPartial),
         tag: tag,
       ));
     }
@@ -434,8 +441,14 @@ class A1Range implements Comparable<A1Range> {
     }
   }
 
-  static int? _maxPartial(int one, int two) => one >= two ? one.a1P : two.a1P;
-  static int? _minPartial(int one, int two) => one <= two ? one.a1P : two.a1P;
+  static int? _maxColumnPartial(int one, int two) =>
+      one >= two ? one.columnPartial : two.columnPartial;
+  static int? _maxRowPartial(int one, int two) =>
+      one >= two ? one.rowPartial : two.rowPartial;
+  static int? _minColumnPartial(int one, int two) =>
+      one <= two ? one.columnPartial : two.columnPartial;
+  static int? _minRowPartial(int one, int two) =>
+      one <= two ? one.rowPartial : two.rowPartial;
 
   /// Return the [A1Range] or null where this and other intersect
   /// updates the tag as [this.tag, other.tag]
@@ -467,9 +480,9 @@ class A1Range implements Comparable<A1Range> {
 
     return A1Range.fromPartials(
       A1Partial.fromVector(
-          _maxPartial(left, otherLeft), _maxPartial(top, otherTop)),
-      A1Partial.fromVector(
-          _minPartial(right, otherRight), _minPartial(bottom, otherBottom)),
+          _maxColumnPartial(left, otherLeft), _maxRowPartial(top, otherTop)),
+      A1Partial.fromVector(_minColumnPartial(right, otherRight),
+          _minRowPartial(bottom, otherBottom)),
       tag: intersectTag,
     );
   }
@@ -483,6 +496,7 @@ class A1Range implements Comparable<A1Range> {
     final (int left, int top, int right, int bottom) = _rectify(from, to);
     final (int otherLeft, int otherTop, int otherRight, int otherBottom) =
         _rectify(other.from, other.to);
+
     if (right < otherLeft || otherRight < left) {
       return false;
     }
@@ -492,11 +506,11 @@ class A1Range implements Comparable<A1Range> {
     return true;
   }
 
-  /// width based on assume full columns are maxInt
-  int get width => (to.column ?? _maxInt) - (from.column ?? 0);
+  /// width where full columns are [A1.maxColumns]
+  int get width => (to.column ?? A1.maxColumns) - (from.column ?? 0);
 
-  /// height based on assume full rows are maxInt
-  int get height => (to.row ?? _maxInt) - (from.row ?? 0);
+  /// height where full rows are [A1.maxRows]
+  int get height => (to.row ?? A1.maxRows) - (from.row ?? 0);
 
   /// adjust range left relative to anchor
   A1Range get goLeft =>
@@ -528,6 +542,18 @@ class A1Range implements Comparable<A1Range> {
   bool get anchorIsRight => (anchor?.column ?? 0) == right;
   bool get anchorIsLeft => (anchor?.column ?? 0) == left;
   bool get anchorIsTop => (anchor?.row ?? 0) == top;
+
+  /// provide a row iterator on this range based on maxRows
+  /// for whole columns or whole range
+  Iterable<int> rowIterable(int maxRow) => Iterable.generate(
+      (to.a1?.row ?? maxRow) - (from.a1?.row ?? 0) + 1,
+      (index) => (from.a1?.row ?? 0) + index);
+
+  /// provide a row iterator on this range based on maxColumns
+  /// for whole rows or whole range
+  Iterable<int> columnIterable(int maxColumn) => Iterable.generate(
+      (to.a1?.column ?? maxColumn) - (from.a1?.column ?? 0) + 1,
+      (index) => (from.a1?.column ?? 0) + index);
 }
 
 /// This extension allows an [A1Range] to be create from a [String]
@@ -538,8 +564,10 @@ extension StringA1RangeExtension on String {
 }
 
 extension on int {
-  static const int _maxInt = -1 >>> 1;
-  int? get a1P => this == _maxInt || isNegative ? null : this;
-  int? get a1PIncrement => this == _maxInt ? null : this + 1;
-  int? get a1PDecrement => this == _maxInt ? null : this - 1;
+  int? get columnPartial => this == A1.maxColumns || isNegative ? null : this;
+  int? get columnPartialIncrement => this == A1.maxColumns ? null : this + 1;
+  int? get columnPartialDecrement => this == A1.maxColumns ? null : this - 1;
+  int? get rowPartial => this == A1.maxRows || isNegative ? null : this;
+  int? get rowPartialIncrement => this == A1.maxRows ? null : this + 1;
+  int? get rowPartialDecrement => this == A1.maxRows ? null : this - 1;
 }

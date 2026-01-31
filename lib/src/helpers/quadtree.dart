@@ -1,154 +1,219 @@
+// Copyright (c) 2024, Scott Horn.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+// Inspired and some code copied from https://github.com/rlch/quadtree-dart/
+// Copyright (c) 2021 Richard Mathieson
+// License detailed https://github.com/rlch/quadtree-dart/blob/master/LICENSE
+
 import 'package:a1/a1.dart';
+
+/// Spatial partitioning
+enum Quadrant { ne, nw, sw, se }
 
 /// A class representing a Quadtree data structure for spatial partitioning.
 class Quadtree {
-  static const int _maxObjects = 4;
-  static const int _maxLevels = 4;
+  Quadtree(
+    this.bounds, {
+    this.depth = 0,
+  });
+  static final int maxRanges = 4;
+  static final int maxDepth = 4;
 
-  /// The current level of this node.
-  final int level;
-  final List<A1Range> _objects = [];
-  final List<Quadtree?> _nodes = List<Quadtree?>.filled(
-    4,
-    null,
-    growable: false,
-  );
-
-  /// bounds for this node/tree
+  /// The range of this partiion
   final A1Range bounds;
 
-  /// Creates a Quadtree node with a specific level and bounds.
-  Quadtree(this.level, this.bounds);
+  /// Depth of this partition
+  final int depth;
 
-  /// Clears the Quadtree by removing all objects and child nodes.
-  void clear() {
-    _objects.clear();
-    for (int i = 0; i < _nodes.length; i++) {
-      _nodes[i]?.clear();
-      _nodes[i] = null;
-    }
-  }
+  /// Ranges contained within the node
+  final List<A1Range> ranges = [];
 
-  /// Splits the node into four subnodes.
+  /// Subnodes of the [Quadtree].
+  final Map<Quadrant, Quadtree> nodes = {};
+
+  /// Split the node into 4 subnodes (ne, nw, sw, se)
   void split() {
-    int subWidth = bounds.width ~/ 2;
-    int subHeight = bounds.height ~/ 2;
-    int left = bounds.left;
-    int top = bounds.top;
+    final nextDepth = depth + 1;
+    final subWidth = bounds.width ~/ 2;
+    final subHeight = bounds.height ~/ 2;
+    final left = bounds.left;
+    final top = bounds.top;
 
-    _nodes[0] = Quadtree(level + 1,
-        A1Range.fromCoordinates(left + subWidth, top, subWidth, subHeight));
-    _nodes[1] = Quadtree(
-        level + 1, A1Range.fromCoordinates(left, top, subWidth, subHeight));
-    _nodes[2] = Quadtree(level + 1,
-        A1Range.fromCoordinates(left, top + subHeight, subWidth, subHeight));
-    _nodes[3] = Quadtree(
-      level + 1,
+    final ne = Quadtree(
+      A1Range.fromCoordinates(
+        left + subWidth,
+        top,
+        left + subWidth * 2,
+        top + subHeight,
+      ),
+      depth: nextDepth,
+    );
+
+    final nw = Quadtree(
+      A1Range.fromCoordinates(
+        left,
+        top,
+        left + subWidth,
+        top + subHeight,
+      ),
+      depth: nextDepth,
+    );
+
+    final sw = Quadtree(
+      A1Range.fromCoordinates(
+        left,
+        top + subHeight,
+        left + subWidth,
+        top + subHeight * 2,
+      ),
+      depth: nextDepth,
+    );
+
+    final se = Quadtree(
       A1Range.fromCoordinates(
         left + subWidth,
         top + subHeight,
-        subWidth,
-        subHeight,
+        left + subWidth * 2,
+        top + subHeight * 2,
       ),
+      depth: nextDepth,
     );
+
+    nodes
+      ..[Quadrant.ne] = ne
+      ..[Quadrant.nw] = nw
+      ..[Quadrant.sw] = sw
+      ..[Quadrant.se] = se;
   }
 
-  /// Determines the index of the subnode that would contain the given range.
-  ///
-  /// Returns -1 if the range cannot fit within a subnode and should remain
-  /// in the parent node.
-  int getIndex(A1Range range) {
-    int index = -1;
-    double verticalMidpoint = bounds.left + bounds.width / 2;
-    double horizontalMidpoint = bounds.top + bounds.height / 2;
+  /// Find the Quadrants the [A1Range] belongs to by
+  /// returning the partition that overlaps (ne, nw, sw, se)
+  List<Quadrant> getQuadrants(A1Range range) {
+    final List<Quadrant> quadrants = [];
+    final xMidpoint = bounds.left + bounds.width ~/ 2;
+    final yMidpoint = bounds.top + bounds.height ~/ 2;
 
-    bool topQuadrant = range.left < horizontalMidpoint &&
-        range.top + range.height < horizontalMidpoint;
-    bool bottomQuadrant = range.top > horizontalMidpoint;
+    final startIsNorth = range.left < yMidpoint;
+    final startIsWest = range.top < xMidpoint;
+    final endIsEast = range.left + range.width >= xMidpoint;
+    final endIsSouth = range.top + range.height >= yMidpoint;
 
-    if (range.left < verticalMidpoint &&
-        range.left + range.width < verticalMidpoint) {
-      if (topQuadrant) {
-        index = 1;
-      } else if (bottomQuadrant) {
-        index = 2;
-      }
-    } else if (range.left > verticalMidpoint) {
-      if (topQuadrant) {
-        index = 0;
-      } else if (bottomQuadrant) {
-        index = 3;
+    if (startIsNorth && endIsEast) quadrants.add(Quadrant.ne);
+    if (startIsWest && startIsNorth) quadrants.add(Quadrant.nw);
+    if (startIsWest && endIsSouth) quadrants.add(Quadrant.sw);
+    if (endIsEast && endIsSouth) quadrants.add(Quadrant.se);
+
+    return quadrants;
+  }
+
+  bool remove(A1Range range) {
+    bool result = false;
+
+    /// Recursively retrieve ranges from subnodes in the relevant quadrants.
+    if (nodes.isNotEmpty) {
+      final quadrants = getQuadrants(range);
+      for (final q in quadrants) {
+        for (final child in nodes[q]!.retrieve(range)) {
+          if (child == range) {
+            if (nodes[q]!.remove(range)) {
+              result = true;
+            }
+          }
+        }
       }
     }
-    return index;
+    ranges.removeWhere((element) {
+      final match = element == range;
+      if (match) {
+        result = true;
+      }
+      return match;
+    });
+    return result;
   }
 
-  /// Inserts a range into the Quadtree.
-  ///
-  /// If the node exceeds the maximum number of objects, it will split
-  /// and distribute its objects among the subnodes.
+  /// Insert the [A1Range] into the node. If the node exceeds the capacity,
+  /// it will split and add all ranges to their corresponding subnodes.
   void insert(A1Range range) {
-    if (_nodes[0] != null) {
-      int index = getIndex(range);
-      if (index != -1) {
-        _nodes[index]!.insert(range);
-        return;
+    /// If we have subnodes, call [insert] on the matching subnodes.
+    if (nodes.isNotEmpty) {
+      final quadrants = getQuadrants(range);
+
+      for (int i = 0; i < quadrants.length; i++) {
+        nodes[quadrants[i]]!.insert(range);
       }
+      return;
     }
 
-    _objects.add(range);
+    ranges.add(range);
 
-    if (_objects.length > _maxObjects && level < _maxLevels) {
-      if (_nodes[0] == null) {
-        split();
+    /// maxRanges reached; only split if maxDepth hasn't been reached.
+    if (ranges.length > maxRanges && depth < maxDepth) {
+      if (nodes.isEmpty) split();
+
+      /// Add ranges to their corresponding subnodes
+      for (final rng in ranges) {
+        getQuadrants(rng).forEach((q) {
+          nodes[q]!.insert(rng);
+        });
       }
 
-      int i = 0;
-      while (i < _objects.length) {
-        int index = getIndex(_objects[i]);
-        if (index != -1) {
-          _nodes[index]!.insert(_objects.removeAt(i));
-        } else {
-          i++;
-        }
-      }
+      /// Node should be cleaned up as the ranges are now contained within
+      /// subnodes.
+      ranges.clear();
     }
   }
 
-  /// Removes a range from the Quadtree.
-  ///
-  /// Returns `true` if the range was successfully removed.
-  bool remove(A1Range rect) {
-    if (_nodes[0] != null) {
-      int index = getIndex(rect);
-      if (index != -1) {
-        bool removedFromChild = _nodes[index]!.remove(rect);
-        if (removedFromChild) {
-          return true;
-        }
+  /// Return all ranges that could overlap
+  List<A1Range> retrieve(A1Range range) {
+    final quadrants = getQuadrants(range);
+    final List<A1Range> foundObjects = [...ranges];
+
+    if (nodes.isNotEmpty) {
+      for (final q in quadrants) {
+        foundObjects.addAll(nodes[q]!.retrieve(range));
       }
     }
-    int initialLength = _objects.length;
-    _objects.remove(rect);
-    return initialLength != _objects.length;
+    return foundObjects.toSet().toList();
   }
 
-  // Retrieves all ranges that could collide with the given range.
-  List<A1Range> _retrieve(List<A1Range> returnObjects, A1Range range) {
-    int index = getIndex(range);
-    if (index != -1 && _nodes[0] != null) {
-      _nodes[index]!._retrieve(returnObjects, range);
+  /// Ranges that overlap with this range useing the optimised lookup
+  List<A1Range> rangesIn(A1Range range) {
+    final List<A1Range> ranges = [];
+    for (final match in retrieve(range)) {
+      if (match.overlaps(range)) {
+        ranges.add(match);
+      }
     }
-    returnObjects.addAll(_objects);
-    return returnObjects;
+    return ranges;
   }
 
-  /// Finds and returns all ranges that overlap with the given target range.
-  List<A1Range> findContainingA1Ranges(A1Range target) {
-    final possibleMatches = _retrieve([], target);
-    return possibleMatches.where((range) => range.overlaps(target)).toList();
+  /// Clear all nodes
+  void clear() {
+    ranges.clear();
+
+    for (final node in nodes.values) {
+      if (node.nodes.isNotEmpty) node.clear();
+    }
+
+    nodes.clear();
   }
 
   @override
-  String toString() => 'Quadtree(level: $level, bounds: $bounds)';
+  bool operator ==(covariant Quadtree other) {
+    if (identical(this, other)) return true;
+
+    return other.bounds == bounds &&
+        other.depth == depth &&
+        other.ranges == ranges;
+  }
+
+  @override
+  int get hashCode => bounds.hashCode ^ depth.hashCode ^ ranges.hashCode;
+
+  @override
+  String toString() {
+    return 'Quadtree(depth: $depth, bounds: $bounds)';
+  }
 }

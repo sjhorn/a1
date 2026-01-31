@@ -4,9 +4,9 @@ import 'package:test/test.dart';
 void main() {
   group('Creating an A1', () {
     test('by parsing a string', () {
-      final a1 = A1.parse('ZZA123');
+      final a1 = A1.parse('SZA123');
       expect(a1, isA<A1>());
-      expect(a1.column, equals(18252));
+      expect(a1.column, equals(13520));
       expect(a1.row, equals(122));
       expect(a1.self, equals(a1));
     });
@@ -19,8 +19,13 @@ void main() {
     });
 
     test('by tryParsing a valid A1 string', () {
-      final a1 = A1.tryParse('ZZA123');
-      expect(a1, equals(A1.parse('ZZA123')));
+      final a1 = A1.tryParse('SZA123');
+      expect(a1, equals(A1.parse('SZA123')));
+
+      // test bigger than A1.maxColumns
+      expect(() => A1.tryParse('ZZA123'), throwsA(isA<FormatException>()));
+      // test digits bigger than A1.maxRows + 2
+      expect(() => A1.tryParse('A1048578'), throwsA(isA<FormatException>()));
     });
 
     test('returns null when tryParsing invalid A1 string', () {
@@ -39,6 +44,23 @@ void main() {
 
     test('throws from an invalid vector', () {
       expect(() => A1.fromVector(-1, 2), throwsA(isA<FormatException>()));
+    });
+
+    test('maxRows and maxColumns constants', () {
+      expect(A1.maxRows, equals(1048576));
+      expect(A1.maxColumns, equals(16384));
+    });
+
+    test('rejects column exceeding maxColumns', () {
+      expect(
+          () => A1.fromVector(A1.maxColumns + 1, 0),
+          throwsA(isA<FormatException>()));
+    });
+
+    test('rejects row exceeding maxRows', () {
+      expect(
+          () => A1.fromVector(0, A1.maxRows + 1),
+          throwsA(isA<FormatException>()));
     });
   });
 
@@ -117,10 +139,9 @@ void main() {
       expect(moved.row, equals(5));
     });
     test('page down', () {
-      const maxInt = -1 >>> 1;
-      var moved = A1.fromVector(0, maxInt).pageDown(4);
+      var moved = A1.fromVector(0, A1.maxRows).pageDown(4);
       expect(moved.column, equals(0));
-      expect(moved.row, equals(maxInt - 1));
+      expect(moved.row, equals(A1.maxRows));
 
       moved = 'a10'.a1.pageDown(4);
       expect(moved.column, equals(0));

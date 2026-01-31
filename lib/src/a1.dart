@@ -9,8 +9,12 @@ import 'package:a1/src/grammer/a1_notation.dart';
 import 'package:petitparser/petitparser.dart';
 
 class A1 implements Comparable<A1> {
-  static final int _maxInt = -1 >>> 1;
   static final A1Notation _a1n = A1Notation();
+
+  /// Total number of rows and columns on a worksheet
+  /// 1,048,576 rows by 16,384 columns
+  static final int maxRows = 1048576;
+  static final int maxColumns = 16384;
 
   /// Uppercase letters for the A part of A1 notation
   late final String letters;
@@ -22,7 +26,17 @@ class A1 implements Comparable<A1> {
   A1 get self => this;
 
   /// Private contructor
-  A1._(this.letters, this.digits);
+  A1._(this.letters, this.digits) {
+    if (row.isNegative) {
+      throw FormatException('row $row must be positive');
+    }
+    if (row > maxRows) {
+      throw FormatException('row must be no greater than $maxRows');
+    }
+    if (column > maxColumns) {
+      throw FormatException('column must be no greater than $maxColumns');
+    }
+  }
 
   /// Parses a string containing an A1 literal into an A1.
   ///
@@ -69,10 +83,12 @@ class A1 implements Comparable<A1> {
         result.value[#row] == null) {
       return null;
     }
-    final column = result.value[#column]!;
-    final row = int.tryParse(result.value[#row]!);
-    if (row == null) return null;
-    return A1._(column, row);
+    final letters = result.value[#column]!;
+    final digits = int.tryParse(result.value[#row]!);
+    if (digits == null) {
+      return null;
+    }
+    return A1._(letters, digits);
   }
 
   /// Returns a (column, row) vector representing the A1
@@ -95,8 +111,14 @@ class A1 implements Comparable<A1> {
     if (row.isNegative) {
       throw FormatException('row $row must be positive');
     }
+    if (row > maxRows) {
+      throw FormatException('row must be no greater than $maxRows');
+    }
+    if (column > maxColumns) {
+      throw FormatException('column must be no greater than $maxColumns');
+    }
     letters = column.a1Letters;
-    digits = row < _maxInt ? row + 1 : _maxInt;
+    digits = row + 1;
   }
 
   /// Create a list of A1's between this A1 and to
@@ -172,14 +194,15 @@ class A1 implements Comparable<A1> {
       A1.fromVector(column + other.column, row + other.row);
 
   /// Returns the [A1] to the right of the current [A1]
-  A1 get right => A1.fromVector(column < _maxInt ? column + 1 : _maxInt, row);
+  A1 get right =>
+      A1.fromVector(column < maxColumns ? column + 1 : maxColumns, row);
 
   /// Returns the [A1] to the left of the current [A1] if already
   /// in column 0 will return a copy of the current cell
   A1 get left => A1.fromVector(max(0, column - 1), row);
 
   /// Returns the [A1] below the current [A1]
-  A1 get down => A1.fromVector(column, row < _maxInt ? row + 1 : _maxInt);
+  A1 get down => A1.fromVector(column, row < maxRows ? row + 1 : maxRows);
 
   /// Returns the [A1] above the current [A1] if already
   /// in row 0 will return a copy of the current cell
@@ -187,7 +210,7 @@ class A1 implements Comparable<A1> {
 
   /// Returns the [A1] pageDown [page] relative to the current [A1]
   A1 pageDown(int page) =>
-      A1.fromVector(column, _maxInt - page < row ? _maxInt : row + page);
+      A1.fromVector(column, maxRows - page < row ? maxRows : row + page);
 
   /// Returns the [A1] pageDown [page] relative to the current [A1]
   A1 pageUp(int page) => A1.fromVector(column, max(0, row - page));

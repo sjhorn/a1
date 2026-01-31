@@ -8,17 +8,16 @@ import 'package:a1/src/helpers/quadtree.dart';
 import 'package:a1/src/helpers/simple_cache.dart';
 
 /// A wrapped [HashMap] of <A1Range,T> that stores the keys
-/// in a SplayTreeSet for sorting to optimise the binarysearch to
+/// in a SplayTreeSet for sorting to optimise the quadtree to
 /// [valueOf] a value or retrieve [rangeOf] matching the cell
 class A1RangeSearch<T> with MapMixin<A1Range, T> {
-  static final int _maxInt = -1 >>> 1;
   final Map<A1Range, T> _map = {};
-  final Quadtree _ranges = Quadtree(0, A1Range.all);
+  final Quadtree _ranges = Quadtree(/*0,*/ A1Range.all);
   final SimpleCache<A1, A1Range?> _cache = SimpleCache(10000);
 
   /// Search for a key in a sorted, non-overlapping set of of [A1Arange]s.
   /// It returns the matching value against the [A1Range] key using a
-  /// binary search. If there is no match null is retuned.
+  /// quadtree search. If there is no match null is retuned.
   T? valueOf(A1 cell) {
     final keyMatch = rangeOf(cell);
     return keyMatch != null ? _map[keyMatch] : null;
@@ -26,7 +25,7 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
 
   /// Search for a key in a sorted, non-overlapping set of of [A1Arange]s.
   /// It returns the matching key against the [A1Range] key using a
-  /// binary search. If there is no match null is retuned.
+  /// quadtree search. If there is no match null is retuned.
   A1Range? rangeOf(A1 cell) {
     if (_cache.containsKey(cell)) {
       return _cache[cell];
@@ -40,17 +39,19 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
   }
 
   /// Search the ranges to see if this range intersects any
-  /// using the binary search method
+  /// using the quadtree search method
   /// Returns a [List] of [A1Range]s if they intersect and and
   /// empty list otherwise.
-  List<A1Range> rangesIn(A1Range range) =>
-      _ranges.findContainingA1Ranges(range);
+  List<A1Range> rangesIn(A1Range range) {
+    return range == A1Range.all ? _map.keys.toList() : _ranges.rangesIn(range);
+  }
 
   @override
   T? operator [](Object? key) => _map[key];
 
   @override
   void operator []=(A1Range key, T value) {
+    _map.remove(key); // need to remove and re-add as hashcode doesn't have tag
     _map[key] = value;
     _ranges.remove(key);
     _ranges.insert(key);
@@ -122,7 +123,7 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
       newRange = _expandToMergeBoundaries(newRange, mergedRanges);
     } else {
       newRange = _contractToMergeBoundaries(newRange, mergedRanges);
-      if (newRange == range && newRange.bottom < _maxInt) {
+      if (newRange == range && newRange.bottom < A1.maxRows) {
         newRange = range.copyWith(to: range.to.down);
         newRange = _expandToMergeBoundaries(newRange, mergedRanges);
       }
@@ -176,7 +177,7 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
       newRange = _expandToMergeBoundaries(newRange, mergedRanges);
     } else {
       newRange = _contractToMergeBoundaries(newRange, mergedRanges);
-      if (newRange == range && newRange.bottom < _maxInt) {
+      if (newRange == range && newRange.bottom < A1.maxRows) {
         newRange = range.copyWith(to: range.to.down);
         newRange = _expandToMergeBoundaries(newRange, mergedRanges);
       }
@@ -203,14 +204,15 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
 
     final ranges = rangesIn(testRange);
     final anchorTouch = ranges.where((e) =>
-        (e.from.row ?? 0) <= anchorRow && (e.to.row ?? _maxInt) >= anchorRow);
+        (e.from.row ?? 0) <= anchorRow &&
+        (e.to.row ?? A1.maxRows) >= anchorRow);
 
     if (anchorTouch.isEmpty) {
       return (anchorRow, anchorRow);
     }
 
     var rowMin = anchorTouch.first.from.row ?? 0;
-    var rowMax = anchorTouch.first.to.row ?? _maxInt;
+    var rowMax = anchorTouch.first.to.row ?? A1.maxRows;
 
     bool rangesUpdated = true;
     while (rangesUpdated) {
@@ -239,14 +241,14 @@ class A1RangeSearch<T> with MapMixin<A1Range, T> {
     final ranges = rangesIn(testRange);
     final anchorTouch = ranges.where((e) =>
         (e.from.column ?? 0) <= anchorColumn &&
-        (e.to.column ?? _maxInt) >= anchorColumn);
+        (e.to.column ?? A1.maxColumns) >= anchorColumn);
 
     if (anchorTouch.isEmpty) {
       return (anchorColumn, anchorColumn);
     }
 
     var colMin = anchorTouch.first.from.column ?? 0;
-    var colMax = anchorTouch.first.to.column ?? _maxInt;
+    var colMax = anchorTouch.first.to.column ?? A1.maxColumns;
 
     bool rangesUpdated = true;
     while (rangesUpdated) {

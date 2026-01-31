@@ -1,5 +1,6 @@
 import 'package:a1/a1.dart';
 import 'package:test/test.dart';
+import 'equals_list.dart';
 
 void main() {
   group('Creating an A1Range', () {
@@ -38,11 +39,11 @@ void main() {
     });
 
     test('by tryParsing a two valid A1 string', () {
-      final a1r = A1Range.tryParse('ZZA123:a2');
+      final a1r = A1Range.tryParse('SZA123:a2');
       expect(a1r?.from, equals('a2'.a1));
-      expect(a1r?.to, equals('ZZA123'.a1));
-      expect(a1r, equals('ZZA123:a2'.a1Range));
-      expect(a1r?.anchor, equals('ZZA123'.a1));
+      expect(a1r?.to, equals('SZA123'.a1));
+      expect(a1r, equals('SZA123:a2'.a1Range));
+      expect(a1r?.anchor, equals('SZA123'.a1));
     });
     test('where the to column/row is greater than the from column/row ', () {
       final a1r = 'C2:A5'.a1Range;
@@ -83,18 +84,18 @@ void main() {
       expect(a1r.anchor, equals('b2'.a1));
     });
     test('from A1s', () {
-      var a1r = A1Range.fromA1s('a2'.a1, 'ZZA123'.a1);
+      var a1r = A1Range.fromA1s('a2'.a1, 'SZA123'.a1);
       expect(a1r.from, equals('a2'.a1));
-      expect(a1r.to, equals('ZZA123'.a1));
-      expect(a1r, equals('ZZA123:a2'.a1Range));
+      expect(a1r.to, equals('SZA123'.a1));
+      expect(a1r, equals('SZA123:a2'.a1Range));
       expect(a1r.anchor, equals('a2'.a1));
 
       // wrong order
-      a1r = A1Range.fromA1s('ZZA123'.a1, 'a2'.a1);
+      a1r = A1Range.fromA1s('SZA123'.a1, 'a2'.a1);
       expect(a1r.from, equals('a2'.a1));
-      expect(a1r.to, equals('ZZA123'.a1));
-      expect(a1r, equals('ZZA123:a2'.a1Range));
-      expect(a1r.anchor, equals('ZZA123'.a1));
+      expect(a1r.to, equals('SZA123'.a1));
+      expect(a1r, equals('SZA123:a2'.a1Range));
+      expect(a1r.anchor, equals('SZA123'.a1));
     });
 
     test('returns null when tryParsing an invalid A1Range string', () {
@@ -127,27 +128,25 @@ void main() {
       expect('1:1'.a1Range.hasRow(1), isFalse);
     });
     test('left, top, right, bottom', () {
-      int maxInt = -1 >>> 1;
       expect('A1:A2'.a1Range.left, equals(0));
       expect('A1:A2'.a1Range.left, equals(0));
       expect('A:A2'.a1Range.top, equals(1)); // A2:A
       expect('1:A2'.a1Range.top, equals(0));
       expect('A1:Z2'.a1Range.right, equals(25));
-      expect('A1:2'.a1Range.right, equals(maxInt));
+      expect('A1:2'.a1Range.right, equals(A1.maxColumns));
       expect('A1:A255'.a1Range.bottom, equals(254));
-      expect('A1:A'.a1Range.bottom, equals(maxInt));
+      expect('A1:A'.a1Range.bottom, equals(A1.maxRows));
     });
     test('columnSpan and rowSpan', () {
-      int maxInt = -1 >>> 1;
       expect('A1:A1'.a1Range.columnSpan, equals(1));
       expect('A1:B2'.a1Range.columnSpan, equals(2));
-      expect('1:A2'.a1Range.columnSpan, equals(maxInt));
-      expect('A1:2'.a1Range.columnSpan, equals(maxInt));
+      expect('1:A2'.a1Range.columnSpan, equals(A1.maxColumns));
+      expect('A1:2'.a1Range.columnSpan, equals(A1.maxColumns));
 
       expect('A1:A1'.a1Range.rowSpan, equals(1));
       expect('A1:B3'.a1Range.rowSpan, equals(3));
-      expect('A1:A'.a1Range.rowSpan, equals(maxInt));
-      expect('A1:B'.a1Range.rowSpan, equals(maxInt));
+      expect('A1:A'.a1Range.rowSpan, equals(A1.maxRows));
+      expect('A1:B'.a1Range.rowSpan, equals(A1.maxRows));
     });
     test('leftBorder for various ranges', () {
       expect('A1:A2'.a1Range.leftBorder, equals('A1:A2'.a1Range));
@@ -282,28 +281,29 @@ void main() {
     test('subtract for bounded ranges', () {
       // inside ranges
       expect('A1:A4'.a1Range.subtract('A1:A2'.a1Range),
-          containsAll(['A3:A4'.a1Range]));
+          equalsList(['A3:A4'.a1Range]));
       expect('C1:C4'.a1Range.subtract('C3:C4'.a1Range),
-          containsAll(['C1:C2'.a1Range]));
+          equalsList(['C1:C2'.a1Range]));
       expect('A9:D9'.a1Range.subtract('A9:B9'.a1Range),
-          containsAll(['C9:D9'.a1Range]));
+          equalsList(['C9:D9'.a1Range]));
       expect('A9:D9'.a1Range.subtract('C9:D9'.a1Range),
-          containsAll(['A9:B9'.a1Range]));
+          equalsList(['A9:B9'.a1Range]));
 
       // overlapping top/right/bottom
       expect('A18:E21'.a1Range.subtract('D16:F24'.a1Range),
-          containsAll(['A18:C21'.a1Range]));
+          equalsList(['A18:C21'.a1Range]));
 
       // overlapping left/top/bottom
       expect('C29:G32'.a1Range.subtract('A26:C35'.a1Range),
-          containsAll(['D29:G32'.a1Range]));
+          equalsList(['D29:G32'.a1Range]));
 
       // complete overlap
-      expect('C4:G32'.a1Range.subtract('A1:F35'.a1Range), containsAll([]));
+      expect('C4:G32'.a1Range.subtract('A1:F35'.a1Range),
+          equalsList(['G4:G32'.a1Range]));
 
       // no overlap
       expect('A1:B6'.a1Range.subtract('D1:F35'.a1Range),
-          containsAll(['A1:B6'.a1Range]));
+          equalsList(['A1:B6'.a1Range]));
     });
     test('subtract for unbounded ranges', () {
       // // Substract from whole columns
@@ -543,12 +543,11 @@ void main() {
     final toPartial2 = A1Range.parse('A1:B');
 
     test('valid from letters', () {
-      const maxInt = -1 >>> 1;
       expect(fromPartial1.from.letters, equals('B'));
       expect(fromPartial1.to.digits, isNull);
       expect(fromPartial2.from.letters, equals('B'));
       expect(fromPartial2.from.digits, equals(1));
-      expect(fromPartial2.anchor, equals(A1.fromVector(maxInt, 0)));
+      expect(fromPartial2.anchor, equals(A1.fromVector(A1.maxColumns, 0)));
     });
     test('valid to letters', () {
       expect(toPartial1.to.letters, isNull);
@@ -659,6 +658,44 @@ void main() {
       expect(a1Range.to.row, equals(25));
       expect(a1Range.from.row, equals(0));
       expect(a1Range.from.row, equals(0));
+    });
+  });
+
+  group('A1Range collapsed and iterables', () {
+    test('collapsed creates single-cell range', () {
+      final a1 = 'B2'.a1;
+      final range = A1Range.collapsed(a1);
+      expect(range.from.a1, equals(a1));
+      expect(range.to.a1, equals(a1));
+      expect(range.isCollapsed, isTrue);
+    });
+
+    test('isCollapsed false for multi-cell range', () {
+      expect('A1:B2'.a1Range.isCollapsed, isFalse);
+      expect('A1:A2'.a1Range.isCollapsed, isFalse);
+    });
+
+    test('rowIterable for bounded range', () {
+      final range = 'A2:C4'.a1Range;
+      expect(range.rowIterable(100).toList(), equals([1, 2, 3]));
+    });
+
+    test('rowIterable for whole column range', () {
+      final range = 'A:A'.a1Range;
+      // whole column: from row 0 to maxRow
+      expect(range.rowIterable(5).length, equals(6));
+      expect(range.rowIterable(5).toList(), equals([0, 1, 2, 3, 4, 5]));
+    });
+
+    test('columnIterable for bounded range', () {
+      final range = 'B1:D3'.a1Range;
+      expect(range.columnIterable(100).toList(), equals([1, 2, 3]));
+    });
+
+    test('columnIterable for whole row range', () {
+      final range = '1:1'.a1Range;
+      expect(range.columnIterable(3).length, equals(4));
+      expect(range.columnIterable(3).toList(), equals([0, 1, 2, 3]));
     });
   });
 }
