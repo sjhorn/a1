@@ -1,3 +1,10 @@
+## 2.1.0
+- Added `A1.maxRows` and `A1.maxColumns` constants with bounds validation on construction
+- Added `A1Range.collapsed()` factory, `isCollapsed` getter, `rowIterable()` and `columnIterable()` methods
+- Refactored [Quadtree] internals from array-based to map-based with `Quadrant` enum for correctness
+- Improved internal naming for row/column partial helpers
+- Fixed `A1Reference.parse` to treat bare cell/range strings (e.g. `A1`, `A1:B2`) as cell references instead of worksheet names
+
 ## 2.0.1
 - MergedRange pageUp/pageDown in [A1RangeSearch] and [A1Range]
 - Added goUp(count)/goLeft(count)/goRight(count)/goDown(count) to [A1Partial]
